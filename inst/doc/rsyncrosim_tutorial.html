@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<meta name="author" content="Colin Daniel, ApexRMS" />
+
+<meta name="date" content="2020-05-29" />
+
+<title>Introduction to rsyncrosim</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    for (var j = 0; j < rules.length; j++) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') continue;
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Introduction to <code>rsyncrosim</code></h1>
+<h4 class="author">Colin Daniel, ApexRMS</h4>
+<h4 class="date">2020-05-29</h4>
+
+
+
+<div id="what-is-rsyncrosim" class="section level2">
+<h2>What is <code>rsyncrosim</code>?</h2>
+<p><code>rsyncrosim</code> is a package designed to facilitate the development of modeling workflows in R for the <a href="https://www.syncrosim.com/">SyncroSim</a> software framework.</p>
+</div>
+<div id="what-is-syncrosim" class="section level2">
+<h2>What is SyncroSim?</h2>
+<p>SyncroSim is a software platform that helps you turn your <em>data</em> into <em>forecasts</em>. At the core of SyncroSim is an engine that automatically structures your existing data, regardless of its original format. SyncroSim then feeds this structured data through a pipeline of calculations (i.e. a suite of <em>models</em>) in order to transform the data into forecasts. As you develop alternative “what-if” forecasting scenarios, SyncroSim keeps track of all of your model inputs and outputs for you. Finally, SyncroSim provides a rich interface for you and others to interact with your data and models, in order to explore and track the consequences of alternative “what-if” forecasting scenarios.</p>
+<p>For more details consult the SyncroSim <a href="https://docs.syncrosim.com/">online documentation</a>.</p>
+<div id="installing-syncrosim-and-rsyncrosim" class="section level3">
+<h3>Installing SyncroSim and <code>rsyncrosim</code></h3>
+<p>Before using <code>rsyncrosim</code> you will first need to <a href="https://www.syncrosim.com/download/">download and install</a> the SyncroSim software. Versions of SyncroSim exist for both Windows and Linux.</p>
+<p>Next you will need to install the <code>rsyncrosim</code> R package, either using <a href="https://cran.r-project.org/">CRAN</a> or from the <code>rsyncrosim</code> <a href="https://github.com/syncrosim/rsyncrosim/releases/">GitHub repository</a>. Versions of <code>rsyncrosim</code> are available for both Windows and Linux. ## Quickstart tutorial</p>
+<p>The following tutorial introduces <code>rsyncrosim</code> using the <em>stsim</em> <a href="https://docs.syncrosim.com/how_to_guides/package_overview.html">SyncroSim Package</a>. <em>st-sim</em> is a SyncroSim Package that lets you develop and run spatially-explicit, stochastic state-and-transition simulation models of landscape change. For more details on <em>stsim</em> consult the <a href="https://docs.syncrosim.com/">ST-Sim online documentation</a>.</p>
+</div>
+<div id="preparation" class="section level3">
+<h3>Preparation</h3>
+<p>Let’s first load the necessary packages. This includes both <code>rsyncrosim</code> and the <code>raster</code> R package.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="kw">library</span>(rsyncrosim)</span>
+<span id="cb1-2"><a href="#cb1-2"></a><span class="kw">library</span>(raster)</span></code></pre></div>
+<p>For this tutorial, we will first need to retrieve the sample raster files (in GeoTIFF format) provided with the <code>rsyncrosim</code> package.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a>stratumTif &lt;-<span class="st"> </span><span class="kw">system.file</span>(<span class="st">&quot;extdata&quot;</span>, <span class="st">&quot;initial-stratum.tif&quot;</span>, </span>
+<span id="cb2-2"><a href="#cb2-2"></a>                          <span class="dt">package =</span> <span class="st">&quot;rsyncrosim&quot;</span>)</span>
+<span id="cb2-3"><a href="#cb2-3"></a>sclassTif &lt;-<span class="st"> </span><span class="kw">system.file</span>(<span class="st">&quot;extdata&quot;</span>, <span class="st">&quot;initial-sclass.tif&quot;</span>, </span>
+<span id="cb2-4"><a href="#cb2-4"></a>                         <span class="dt">package =</span> <span class="st">&quot;rsyncrosim&quot;</span>)</span>
+<span id="cb2-5"><a href="#cb2-5"></a>ageTif &lt;-<span class="st"> </span><span class="kw">system.file</span>(<span class="st">&quot;extdata&quot;</span>, <span class="st">&quot;initial-age.tif&quot;</span>, </span>
+<span id="cb2-6"><a href="#cb2-6"></a>                      <span class="dt">package =</span> <span class="st">&quot;rsyncrosim&quot;</span>)</span></code></pre></div>
+<p>The first step in a typical <code>rsyncrosim</code> workflow is to create a SyncroSim Session object in R that provides the connection to your installed copy of the SyncroSim software. A new Session is created using the <code>session</code> function, for which the first argument is a path to the folder on your computer into which the SyncroSim software has been installed.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a>mySession &lt;-<span class="st"> </span><span class="kw">session</span>(<span class="st">&quot;path/to/install_folder&quot;</span>)  <span class="co"># Create a Session based SyncroSim install folder</span></span>
+<span id="cb3-2"><a href="#cb3-2"></a>mySession &lt;-<span class="st"> </span><span class="kw">session</span>()                              <span class="co"># Using default install folder (Windows only)</span></span>
+<span id="cb3-3"><a href="#cb3-3"></a>mySession                                           <span class="co"># Displays the Session object</span></span></code></pre></div>
+<p>The next step is to create a SyncroSim <a href="https://docs.syncrosim.com/how_to_guides/library_overview.html">Library</a>. A Library is a file (with <code>.ssim</code> extension) that stores all of your model inputs and outputs. The format of each SyncroSim Library is unique to the SyncroSim Package with which it is associated. We use the <code>ssimLibrary</code> function to create a new SsimLibrary object in R that is connected (through your Session) to a SyncroSim Library file. Note that an existing Library file can be later opened again by setting <code>overwrite=FALSE</code> for the <code>ssimLibrary</code> function.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a><span class="kw">addPackage</span>(<span class="st">&quot;stsim&quot;</span>, mySession)   <span class="co"># Get stsim package from SyncroSim online server (only the first time)</span></span>
+<span id="cb4-2"><a href="#cb4-2"></a>myLibrary &lt;-<span class="st"> </span><span class="kw">ssimLibrary</span>(<span class="dt">name =</span> <span class="st">&quot;demoLibrary.ssim&quot;</span>, <span class="dt">session =</span> mySession, <span class="dt">overwrite =</span> <span class="ot">TRUE</span>)</span></code></pre></div>
+<p>Each SyncroSim Library contains one or more SyncroSim <a href="https://docs.syncrosim.com/how_to_guides/library_overview.html">Projects</a>, each represented by a Project object in R. Projects typically store model inputs that are common to all your scenarios. In most situations you will need only a single Project for your Library; by default each new Library starts with a single Project named “Definitions” (with a unique <code>projectId</code>= 1). The <code>project</code> function is used to both create and retrieve Projects.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a><span class="co"># Loads the existing default Project</span></span>
+<span id="cb5-2"><a href="#cb5-2"></a>myProject =<span class="st"> </span><span class="kw">project</span>(myLibrary, <span class="dt">project =</span> <span class="st">&quot;Definitions&quot;</span>) <span class="co"># Using name for Project</span></span>
+<span id="cb5-3"><a href="#cb5-3"></a>myProject =<span class="st"> </span><span class="kw">project</span>(myLibrary, <span class="dt">project =</span> <span class="dv">1</span>) <span class="co"># Using projectId for Project</span></span></code></pre></div>
+<p>Finally, each SyncroSim Project contains one or more <a href="https://docs.syncrosim.com/how_to_guides/library_overview.html">Scenarios</a>, each represented by a Scenario object in R. Scenarios store the specific model inputs and outputs associated with each model run in SyncroSim. Each Scenario can be identified by its unique <code>scenarioId</code>. The <code>scenario</code> function is used to both create and retrieve Scenarios.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a><span class="co"># Creates a Scenario object (associated with the default Project)</span></span>
+<span id="cb6-2"><a href="#cb6-2"></a>myScenario =<span class="st"> </span><span class="kw">scenario</span>(myProject, <span class="dt">scenario =</span> <span class="st">&quot;My first scenario&quot;</span>)</span>
+<span id="cb6-3"><a href="#cb6-3"></a>myScenario</span>
+<span id="cb6-4"><a href="#cb6-4"></a><span class="co">#&gt; class                      : Scenario</span></span>
+<span id="cb6-5"><a href="#cb6-5"></a><span class="co">#&gt; projectId [numeric]        : 1</span></span>
+<span id="cb6-6"><a href="#cb6-6"></a><span class="co">#&gt; scenarioId [numeric]       : 1</span></span>
+<span id="cb6-7"><a href="#cb6-7"></a><span class="co">#&gt; parentId [numeric]         : 0</span></span>
+<span id="cb6-8"><a href="#cb6-8"></a><span class="co">#&gt; breakpoints [list]         : </span></span>
+<span id="cb6-9"><a href="#cb6-9"></a><span class="co">#&gt; session [Session]          : C:/Program Files/SyncroSim, printCmd=FALSE</span></span>
+<span id="cb6-10"><a href="#cb6-10"></a><span class="co">#&gt; filepath [character]       : C:\Users\ADMINI~1\AppData\Local\Temp\2\RtmpUVGBLa/demoLib.ssim</span></span>
+<span id="cb6-11"><a href="#cb6-11"></a><span class="co">#&gt; datasheetNames [data.frame]: scope,package,name,displayName,isSingle,isOutput</span></span></code></pre></div>
+<p>Finally, each SyncroSim Library contains multiple SyncroSim <a href="https://docs.syncrosim.com/how_to_guides/properties_overview.html">Datasheets</a>. A SyncroSim Datasheet is simply a table of data stored in the Library. Datasheets each have a <em>scope</em>: either library, project or scenario.</p>
+<p>For example use the <code>datasheet</code> function (with the argument <code>summary=TRUE</code>) to list all the available SyncroSim Datasheets for your Library. These typically represent general settings for your SyncroSim Library.</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a><span class="kw">datasheet</span>(myLibrary, <span class="dt">summary =</span> <span class="ot">TRUE</span>)</span>
+<span id="cb7-2"><a href="#cb7-2"></a><span class="co">#&gt;     scope                      name             displayName</span></span>
+<span id="cb7-3"><a href="#cb7-3"></a><span class="co">#&gt; 1 library               core_Backup                  Backup</span></span>
+<span id="cb7-4"><a href="#cb7-4"></a><span class="co">#&gt; 2 library      core_Multiprocessing         Multiprocessing</span></span>
+<span id="cb7-5"><a href="#cb7-5"></a><span class="co">#&gt; 3 library              core_Options                 Options</span></span>
+<span id="cb7-6"><a href="#cb7-6"></a><span class="co">#&gt; 4 library core_ProcessorGroupOption Processor Group Options</span></span>
+<span id="cb7-7"><a href="#cb7-7"></a><span class="co">#&gt; 5 library  core_ProcessorGroupValue  Processor Group Values</span></span>
+<span id="cb7-8"><a href="#cb7-8"></a><span class="co">#&gt; 6 library              core_RConfig         R Configuration</span></span>
+<span id="cb7-9"><a href="#cb7-9"></a><span class="co">#&gt; 7 library             core_Settings                Settings</span></span>
+<span id="cb7-10"><a href="#cb7-10"></a><span class="co">#&gt; 8 library            core_SysFolder                 Folders</span></span>
+<span id="cb7-11"><a href="#cb7-11"></a><span class="co">#&gt; 9 library         corestime_Options         Spatial Options</span></span></code></pre></div>
+<p>Note that each datasheet has a <em>name</em>. This is important - you will use this later to retrieve the data associated with a specific Datasheet.</p>
+<p>Similarly you can view the list of Datasheets associated with your Project and your Scenario</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1"></a><span class="kw">datasheet</span>(myProject, <span class="dt">summary =</span> <span class="ot">TRUE</span>)</span>
+<span id="cb8-2"><a href="#cb8-2"></a><span class="kw">datasheet</span>(myScenario, <span class="dt">summary =</span> <span class="ot">TRUE</span>)</span></code></pre></div>
+</div>
+<div id="project-definitions" class="section level3">
+<h3>Project Definitions</h3>
+<p>In order to run a model in SyncroSim, we first need to setup all of the required model inputs. As outlined above, inputs come in two forms: Scenario inputs (which <em>can</em> vary by Scenario) and Project inputs (which <em>must</em> be fixed across all Scenarios). In general most inputs are Scenario inputs; Project inputs are typically reserved for values that must be shared by all Scenarios (e.g. constants, shared lookup values).</p>
+<p>Let’s begin by configuring our Project inputs. All inputs in SyncroSim are stored in Datasheets. We say that inputs associated with a Project are <em>project-scoped Datasheets</em>. For example, in <em>stsim</em> there is a project-scoped Datasheet called <em>Terminology</em> specifying terms used across all Scenarios. We will use the <code>datasheet</code> function to retrieve the current values for this Datasheet, as currently stored in the SyncroSim Library file.</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1"></a><span class="co"># Returns a dataframe of the Terminology Datasheet</span></span>
+<span id="cb9-2"><a href="#cb9-2"></a>sheetData &lt;-<span class="st"> </span><span class="kw">datasheet</span>(myProject, <span class="dt">name=</span><span class="st">&quot;stsim_Terminology&quot;</span>)</span>
+<span id="cb9-3"><a href="#cb9-3"></a><span class="kw">str</span>(sheetData)</span>
+<span id="cb9-4"><a href="#cb9-4"></a><span class="co">#&gt; &#39;data.frame&#39;:    1 obs. of  8 variables:</span></span>
+<span id="cb9-5"><a href="#cb9-5"></a><span class="co">#&gt;  $ AmountLabel          : chr &quot;Area&quot;</span></span>
+<span id="cb9-6"><a href="#cb9-6"></a><span class="co">#&gt;  $ AmountUnits          : Factor w/ 4 levels &quot;Acres&quot;,&quot;Hectares&quot;,..: 1</span></span>
+<span id="cb9-7"><a href="#cb9-7"></a><span class="co">#&gt;  $ StateLabelX          : chr &quot;Class&quot;</span></span>
+<span id="cb9-8"><a href="#cb9-8"></a><span class="co">#&gt;  $ StateLabelY          : chr &quot;Subclass&quot;</span></span>
+<span id="cb9-9"><a href="#cb9-9"></a><span class="co">#&gt;  $ PrimaryStratumLabel  : chr &quot;Primary Stratum&quot;</span></span>
+<span id="cb9-10"><a href="#cb9-10"></a><span class="co">#&gt;  $ SecondaryStratumLabel: chr &quot;Secondary Stratum&quot;</span></span>
+<span id="cb9-11"><a href="#cb9-11"></a><span class="co">#&gt;  $ TertiaryStratumLabel : chr &quot;Tertiary Stratum&quot;</span></span>
+<span id="cb9-12"><a href="#cb9-12"></a><span class="co">#&gt;  $ TimestepUnits        : chr &quot;Timestep&quot;</span></span></code></pre></div>
+<p>We can now change the terminology of the <code>StateLabelX</code> and <code>AmountUnits</code> columns in our Datasheet, and then save those changes back to the SyncroSim Library file.</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1"></a><span class="co"># Edit the dataframe values</span></span>
+<span id="cb10-2"><a href="#cb10-2"></a>sheetData<span class="op">$</span>AmountUnits &lt;-<span class="st"> &quot;Hectares&quot;</span></span>
+<span id="cb10-3"><a href="#cb10-3"></a>sheetData<span class="op">$</span>StateLabelX &lt;-<span class="st"> &quot;Forest Type&quot;</span></span>
+<span id="cb10-4"><a href="#cb10-4"></a></span>
+<span id="cb10-5"><a href="#cb10-5"></a><span class="co"># Saves the edits back to the Library file</span></span>
+<span id="cb10-6"><a href="#cb10-6"></a><span class="kw">saveDatasheet</span>(myProject, sheetData, <span class="st">&quot;stsim_Terminology&quot;</span>) </span>
+<span id="cb10-7"><a href="#cb10-7"></a><span class="co">#&gt; Datasheet &lt;stsim_Terminology&gt; saved</span></span></code></pre></div>
+<p>Similarly we can edit other Project-scoped Datasheets for <em>stsim</em>.</p>
+<p><strong>Stratum</strong>: Primary Strata in the model</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1"></a><span class="co"># Retrieves an empty copy of the Datasheet</span></span>
+<span id="cb11-2"><a href="#cb11-2"></a>sheetData &lt;-<span class="st"> </span><span class="kw">datasheet</span>(myProject, <span class="st">&quot;stsim_Stratum&quot;</span>, <span class="dt">empty =</span> <span class="ot">TRUE</span>)</span>
+<span id="cb11-3"><a href="#cb11-3"></a></span>
+<span id="cb11-4"><a href="#cb11-4"></a><span class="co"># Helper function in rsyncrosim to add rows to dataframes</span></span>
+<span id="cb11-5"><a href="#cb11-5"></a>sheetData &lt;-<span class="st"> </span><span class="kw">addRow</span>(sheetData, <span class="st">&quot;Entire Forest&quot;</span>)</span>
+<span id="cb11-6"><a href="#cb11-6"></a></span>
+<span id="cb11-7"><a href="#cb11-7"></a><span class="co"># Save edits to file</span></span>
+<span id="cb11-8"><a href="#cb11-8"></a><span class="kw">saveDatasheet</span>(myProject, sheetData, <span class="st">&quot;stsim_Stratum&quot;</span>, <span class="dt">force =</span> <span class="ot">TRUE</span>)</span>
+<span id="cb11-9"><a href="#cb11-9"></a><span class="co">#&gt; Datasheet &lt;stsim_Stratum&gt; saved</span></span></code></pre></div>
+<p><strong>StateLabelX</strong>: First dimension of labels for State Classes</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1"></a>forestTypes &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;Coniferous&quot;</span>, <span class="st">&quot;Deciduous&quot;</span>, <span class="st">&quot;Mixed&quot;</span>)</span>
+<span id="cb12-2"><a href="#cb12-2"></a><span class="kw">saveDatasheet</span>(myProject, <span class="kw">data.frame</span>(<span class="dt">Name =</span> forestTypes), <span class="st">&quot;stsim_StateLabelX&quot;</span>, <span class="dt">force =</span> <span class="ot">TRUE</span>)</span>
+<span id="cb12-3"><a href="#cb12-3"></a><span class="co">#&gt; Datasheet &lt;stsim_StateLabelX&gt; saved</span></span></code></pre></div>
+<p><strong>StateLabelY</strong>: Second dimension of labels for State Classes</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1"></a><span class="kw">saveDatasheet</span>(myProject, <span class="kw">data.frame</span>(<span class="dt">Name =</span> <span class="kw">c</span>(<span class="st">&quot;All&quot;</span>)), <span class="st">&quot;stsim_StateLabelY&quot;</span>, <span class="dt">force =</span> <span class="ot">TRUE</span>)</span>
+<span id="cb13-2"><a href="#cb13-2"></a><span class="co">#&gt; Datasheet &lt;stsim_StateLabelY&gt; saved</span></span></code></pre></div>
+<p><strong>State Classes</strong>: Combines <strong>StateLabelX</strong> and <strong>StateLabelY</strong>; assigns each one a unique name and ID</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1"></a>stateClasses &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">Name =</span> forestTypes)</span>
+<span id="cb14-2"><a href="#cb14-2"></a>stateClasses<span class="op">$</span>StateLabelXID &lt;-<span class="st"> </span>stateClasses<span class="op">$</span>Name</span>
+<span id="cb14-3"><a href="#cb14-3"></a>stateClasses<span class="op">$</span>StateLabelYID &lt;-<span class="st"> &quot;All&quot;</span></span>
+<span id="cb14-4"><a href="#cb14-4"></a>stateClasses<span class="op">$</span>ID &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>)</span>
+<span id="cb14-5"><a href="#cb14-5"></a><span class="kw">saveDatasheet</span>(myProject, stateClasses, <span class="st">&quot;stsim_StateClass&quot;</span>, <span class="dt">force =</span> <span class="ot">TRUE</span>)</span>
+<span id="cb14-6"><a href="#cb14-6"></a><span class="co">#&gt; Datasheet &lt;stsim_StateClass&gt; saved</span></span></code></pre></div>
+<p><strong>Transition Types</strong>: Defines the types of transition in our model; assigns each one a unique name and ID</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1"></a>transitionTypes &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">Name =</span> <span class="kw">c</span>(<span class="st">&quot;Fire&quot;</span>, <span class="st">&quot;Harvest&quot;</span>, <span class="st">&quot;Succession&quot;</span>), <span class="dt">ID =</span> <span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>))</span>
+<span id="cb15-2"><a href="#cb15-2"></a><span class="kw">saveDatasheet</span>(myProject, transitionTypes, <span class="st">&quot;stsim_TransitionType&quot;</span>, <span class="dt">force =</span> <span class="ot">TRUE</span>)</span>
+<span id="cb15-3"><a href="#cb15-3"></a><span class="co">#&gt; Datasheet &lt;stsim_TransitionType&gt; saved</span></span></code></pre></div>
+<p><strong>Transition Groups</strong>: Makes the Groups identical to the Types</p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1"></a>transitionGroups &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">Name =</span> <span class="kw">c</span>(<span class="st">&quot;Fire&quot;</span>, <span class="st">&quot;Harvest&quot;</span>, <span class="st">&quot;Succession&quot;</span>))</span>
+<span id="cb16-2"><a href="#cb16-2"></a><span class="kw">saveDatasheet</span>(myProject, transitionGroups, <span class="st">&quot;TransitionGroup&quot;</span>, <span class="dt">force =</span> T)</span>
+<span id="cb16-3"><a href="#cb16-3"></a><span class="co">#&gt; Datasheet &lt;stsim_TransitionGroup&gt; saved</span></span></code></pre></div>
+<p><strong>Transition Types by Groups</strong>: Assigns each Type to its Group</p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1"></a>transitionTypesGroups &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">TransitionTypeID =</span> transitionTypes<span class="op">$</span>Name,</span>
+<span id="cb17-2"><a href="#cb17-2"></a>                                    <span class="dt">TransitionGroupID =</span> transitionGroups<span class="op">$</span>Name)</span>
+<span id="cb17-3"><a href="#cb17-3"></a><span class="kw">saveDatasheet</span>(myProject, transitionTypesGroups, <span class="st">&quot;TransitionTypeGroup&quot;</span>, <span class="dt">force =</span> T)</span>
+<span id="cb17-4"><a href="#cb17-4"></a><span class="co">#&gt; Datasheet &lt;stsim_TransitionTypeGroup&gt; saved</span></span></code></pre></div>
+<p><strong>Ages</strong> defines the basic parameters to control the age reporting in the model</p>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1"></a>ageFrequency &lt;-<span class="st"> </span><span class="dv">1</span></span>
+<span id="cb18-2"><a href="#cb18-2"></a>ageMax &lt;-<span class="st"> </span><span class="dv">101</span></span>
+<span id="cb18-3"><a href="#cb18-3"></a>ageGroups &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dv">20</span>, <span class="dv">40</span>, <span class="dv">60</span>, <span class="dv">80</span>, <span class="dv">100</span>)</span>
+<span id="cb18-4"><a href="#cb18-4"></a></span>
+<span id="cb18-5"><a href="#cb18-5"></a><span class="kw">saveDatasheet</span>(myProject, <span class="kw">data.frame</span>(<span class="dt">Frequency =</span> ageFrequency, <span class="dt">MaximumAge =</span> ageMax),</span>
+<span id="cb18-6"><a href="#cb18-6"></a>              <span class="st">&quot;AgeType&quot;</span>, <span class="dt">force =</span> <span class="ot">TRUE</span>)</span>
+<span id="cb18-7"><a href="#cb18-7"></a><span class="co">#&gt; Datasheet &lt;stsim_AgeType&gt; saved</span></span>
+<span id="cb18-8"><a href="#cb18-8"></a><span class="kw">saveDatasheet</span>(myProject, <span class="kw">data.frame</span>(<span class="dt">MaximumAge =</span> ageGroups), <span class="st">&quot;stsim_AgeGroup&quot;</span>, <span class="dt">force =</span> <span class="ot">TRUE</span>)</span>
+<span id="cb18-9"><a href="#cb18-9"></a><span class="co">#&gt; Datasheet &lt;stsim_AgeGroup&gt; saved</span></span></code></pre></div>
+</div>
+<div id="scenario-inputs" class="section level3">
+<h3>Scenario Inputs</h3>
+<p>Now that we have defined all our Project level definitions we can move on to specifying scenario-specific model inputs. We begin by using the <code>scenario</code> function to create a new Scenario in our Project.</p>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1"></a>myScenario &lt;-<span class="st"> </span><span class="kw">scenario</span>(myProject, <span class="st">&quot;No Harvest&quot;</span>)</span></code></pre></div>
+<p>Once again we can use the <code>datasheet</code> function (with <code>summary=TRUE</code>) to display all the scenario-scoped Datasheets.</p>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1"></a><span class="co"># Subset the list to show only Scenario Datasheets</span></span>
+<span id="cb20-2"><a href="#cb20-2"></a><span class="kw">subset</span>(<span class="kw">datasheet</span>(myScenario, <span class="dt">summary =</span> <span class="ot">TRUE</span>), scope <span class="op">==</span><span class="st"> &quot;scenario&quot;</span>)</span></code></pre></div>
+<p>We can now use the <code>datasheet</code> function to retrieve, one at a time, each of our Scenario-scoped Datasheets from our Library.</p>
+<p><strong>Run Control</strong> defines the length of the run and whether or not it is a spatial run (requires spatial inputs to be set, see below). Here we make the run spatial:</p>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1"></a><span class="co"># Run simulation for 7 realizations and 10 timesteps</span></span>
+<span id="cb21-2"><a href="#cb21-2"></a>sheetName &lt;-<span class="st"> &quot;stsim_RunControl&quot;</span></span>
+<span id="cb21-3"><a href="#cb21-3"></a>sheetData &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">MaximumIteration =</span> <span class="dv">7</span>,</span>
+<span id="cb21-4"><a href="#cb21-4"></a>                        <span class="dt">MinimumTimestep =</span> <span class="dv">0</span>,</span>
+<span id="cb21-5"><a href="#cb21-5"></a>                        <span class="dt">MaximumTimestep =</span> <span class="dv">10</span>,</span>
+<span id="cb21-6"><a href="#cb21-6"></a>                        <span class="dt">isSpatial =</span> <span class="ot">TRUE</span>)</span>
+<span id="cb21-7"><a href="#cb21-7"></a><span class="kw">saveDatasheet</span>(myScenario, sheetData, sheetName)</span>
+<span id="cb21-8"><a href="#cb21-8"></a><span class="co">#&gt; Datasheet &lt;stsim_RunControl&gt; saved</span></span></code></pre></div>
+<p><strong>Deterministic Transitions</strong> first define transitions that take place in the absence of probabilistic transitions. Here we also set the age boundaries for each State Class:</p>
+<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1"></a><span class="co"># Add all the deterministic transitions</span></span>
+<span id="cb22-2"><a href="#cb22-2"></a>sheetName &lt;-<span class="st"> &quot;stsim_DeterministicTransition&quot;</span></span>
+<span id="cb22-3"><a href="#cb22-3"></a>sheetData &lt;-<span class="st"> </span><span class="kw">datasheet</span>(myScenario, sheetName, <span class="dt">optional =</span> T, <span class="dt">empty =</span> T)</span>
+<span id="cb22-4"><a href="#cb22-4"></a>sheetData &lt;-<span class="st"> </span><span class="kw">addRow</span>(sheetData, <span class="kw">data.frame</span>(<span class="dt">StateClassIDSource =</span> <span class="st">&quot;Coniferous&quot;</span>,</span>
+<span id="cb22-5"><a href="#cb22-5"></a>                                          <span class="dt">StateClassIDDest =</span> <span class="st">&quot;Coniferous&quot;</span>,</span>
+<span id="cb22-6"><a href="#cb22-6"></a>                                          <span class="dt">AgeMin =</span> <span class="dv">21</span>,</span>
+<span id="cb22-7"><a href="#cb22-7"></a>                                          <span class="dt">Location =</span> <span class="st">&quot;C1&quot;</span>))</span>
+<span id="cb22-8"><a href="#cb22-8"></a>sheetData &lt;-<span class="st"> </span><span class="kw">addRow</span>(sheetData, <span class="kw">data.frame</span>(<span class="dt">StateClassIDSource =</span> <span class="st">&quot;Deciduous&quot;</span>,</span>
+<span id="cb22-9"><a href="#cb22-9"></a>                                          <span class="dt">StateClassIDDest =</span> <span class="st">&quot;Deciduous&quot;</span>,</span>
+<span id="cb22-10"><a href="#cb22-10"></a>                                          <span class="dt">Location =</span> <span class="st">&quot;A1&quot;</span>))</span>
+<span id="cb22-11"><a href="#cb22-11"></a>sheetData &lt;-<span class="st"> </span><span class="kw">addRow</span>(sheetData, <span class="kw">data.frame</span>(<span class="dt">StateClassIDSource =</span> <span class="st">&quot;Mixed&quot;</span>,</span>
+<span id="cb22-12"><a href="#cb22-12"></a>                                          <span class="dt">StateClassIDDest =</span> <span class="st">&quot;Mixed&quot;</span>,</span>
+<span id="cb22-13"><a href="#cb22-13"></a>                                          <span class="dt">AgeMin =</span> <span class="dv">11</span>,</span>
+<span id="cb22-14"><a href="#cb22-14"></a>                                          <span class="dt">Location =</span> <span class="st">&quot;B1&quot;</span>))</span>
+<span id="cb22-15"><a href="#cb22-15"></a><span class="kw">saveDatasheet</span>(myScenario, sheetData, sheetName)</span>
+<span id="cb22-16"><a href="#cb22-16"></a><span class="co">#&gt; Datasheet &lt;stsim_DeterministicTransition&gt; saved</span></span></code></pre></div>
+<p><strong>Probabilistic Transitions</strong> define the transitions between State Classes and assigns a probability to each:</p>
+<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1"></a><span class="co"># Add all the probabilistic transition pathways</span></span>
+<span id="cb23-2"><a href="#cb23-2"></a>sheetName &lt;-<span class="st"> &quot;stsim_Transition&quot;</span></span>
+<span id="cb23-3"><a href="#cb23-3"></a>sheetData &lt;-<span class="st"> </span><span class="kw">datasheet</span>(myScenario, sheetName, <span class="dt">optional =</span> T, <span class="dt">empty =</span> T)</span>
+<span id="cb23-4"><a href="#cb23-4"></a>sheetData &lt;-<span class="st"> </span><span class="kw">addRow</span>(sheetData, <span class="kw">data.frame</span>(<span class="dt">StateClassIDSource =</span> <span class="st">&quot;Coniferous&quot;</span>, </span>
+<span id="cb23-5"><a href="#cb23-5"></a>                                          <span class="dt">StateClassIDDest =</span> <span class="st">&quot;Deciduous&quot;</span>, </span>
+<span id="cb23-6"><a href="#cb23-6"></a>                                          <span class="dt">TransitionTypeID =</span> <span class="st">&quot;Fire&quot;</span>, </span>
+<span id="cb23-7"><a href="#cb23-7"></a>                                          <span class="dt">Probability =</span> <span class="fl">0.01</span>))</span>
+<span id="cb23-8"><a href="#cb23-8"></a>sheetData &lt;-<span class="st"> </span><span class="kw">addRow</span>(sheetData, <span class="kw">data.frame</span>(<span class="dt">StateClassIDSource =</span> <span class="st">&quot;Coniferous&quot;</span>,</span>
+<span id="cb23-9"><a href="#cb23-9"></a>                                          <span class="dt">StateClassIDDest =</span> <span class="st">&quot;Deciduous&quot;</span>, </span>
+<span id="cb23-10"><a href="#cb23-10"></a>                                          <span class="dt">TransitionTypeID =</span> <span class="st">&quot;Harvest&quot;</span>, </span>
+<span id="cb23-11"><a href="#cb23-11"></a>                                          <span class="dt">Probability =</span> <span class="dv">1</span>, </span>
+<span id="cb23-12"><a href="#cb23-12"></a>                                          <span class="dt">AgeMin =</span> <span class="dv">40</span>))</span>
+<span id="cb23-13"><a href="#cb23-13"></a>sheetData &lt;-<span class="st"> </span><span class="kw">addRow</span>(sheetData, <span class="kw">data.frame</span>(<span class="dt">StateClassIDSource =</span> <span class="st">&quot;Deciduous&quot;</span>,</span>
+<span id="cb23-14"><a href="#cb23-14"></a>                                          <span class="dt">StateClassIDDest =</span> <span class="st">&quot;Deciduous&quot;</span>, </span>
+<span id="cb23-15"><a href="#cb23-15"></a>                                          <span class="dt">TransitionTypeID =</span> <span class="st">&quot;Fire&quot;</span>, </span>
+<span id="cb23-16"><a href="#cb23-16"></a>                                          <span class="dt">Probability =</span> <span class="fl">0.002</span>))</span>
+<span id="cb23-17"><a href="#cb23-17"></a>sheetData &lt;-<span class="st"> </span><span class="kw">addRow</span>(sheetData, <span class="kw">data.frame</span>(<span class="dt">StateClassIDSource =</span> <span class="st">&quot;Deciduous&quot;</span>,</span>
+<span id="cb23-18"><a href="#cb23-18"></a>                                          <span class="dt">StateClassIDDest =</span> <span class="st">&quot;Mixed&quot;</span>, </span>
+<span id="cb23-19"><a href="#cb23-19"></a>                                          <span class="dt">TransitionTypeID =</span> <span class="st">&quot;Succession&quot;</span>, </span>
+<span id="cb23-20"><a href="#cb23-20"></a>                                          <span class="dt">Probability =</span> <span class="fl">0.1</span>, </span>
+<span id="cb23-21"><a href="#cb23-21"></a>                                          <span class="dt">AgeMin =</span> <span class="dv">10</span>))</span>
+<span id="cb23-22"><a href="#cb23-22"></a>sheetData &lt;-<span class="st"> </span><span class="kw">addRow</span>(sheetData, <span class="kw">data.frame</span>(<span class="dt">StateClassIDSource =</span> <span class="st">&quot;Mixed&quot;</span>, </span>
+<span id="cb23-23"><a href="#cb23-23"></a>                                          <span class="dt">StateClassIDDest =</span> <span class="st">&quot;Deciduous&quot;</span>, </span>
+<span id="cb23-24"><a href="#cb23-24"></a>                                          <span class="dt">TransitionTypeID =</span> <span class="st">&quot;Fire&quot;</span>, </span>
+<span id="cb23-25"><a href="#cb23-25"></a>                                          <span class="dt">Probability =</span> <span class="fl">0.005</span>))</span>
+<span id="cb23-26"><a href="#cb23-26"></a>sheetData &lt;-<span class="st"> </span><span class="kw">addRow</span>(sheetData, <span class="kw">data.frame</span>(<span class="dt">StateClassIDSource =</span> <span class="st">&quot;Mixed&quot;</span>, </span>
+<span id="cb23-27"><a href="#cb23-27"></a>                                          <span class="dt">StateClassIDDest =</span> <span class="st">&quot;Coniferous&quot;</span>,</span>
+<span id="cb23-28"><a href="#cb23-28"></a>                                          <span class="dt">TransitionTypeID =</span> <span class="st">&quot;Succession&quot;</span>, </span>
+<span id="cb23-29"><a href="#cb23-29"></a>                                          <span class="dt">Probability =</span> <span class="fl">0.1</span>, </span>
+<span id="cb23-30"><a href="#cb23-30"></a>                                          <span class="dt">AgeMin =</span> <span class="dv">20</span>))</span>
+<span id="cb23-31"><a href="#cb23-31"></a><span class="kw">saveDatasheet</span>(myScenario, sheetData, sheetName)</span>
+<span id="cb23-32"><a href="#cb23-32"></a><span class="co">#&gt; Datasheet &lt;stsim_Transition&gt; saved</span></span></code></pre></div>
+<p><strong>Initial Conditions</strong> sets the starting conditions of the model at time 0. There are two options for setting initial conditions: either spatial or non-spatial. In this example we will use spatial initial conditions; however we demonstrate below how also to set initial conditions non-spatially.</p>
+<ul>
+<li><strong><em>Initial Conditions: Option 1 - Spatial</em></strong>. Let’s first take a look at our rasters.</li>
+</ul>
+<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1"></a>rStratum &lt;-<span class="st"> </span><span class="kw">raster</span>(stratumTif)</span>
+<span id="cb24-2"><a href="#cb24-2"></a>rSclass &lt;-<span class="st"> </span><span class="kw">raster</span>(sclassTif)</span>
+<span id="cb24-3"><a href="#cb24-3"></a>rAge &lt;-<span class="st"> </span><span class="kw">raster</span>(ageTif)</span>
+<span id="cb24-4"><a href="#cb24-4"></a></span>
+<span id="cb24-5"><a href="#cb24-5"></a><span class="kw">plot</span>(rStratum)</span></code></pre></div>
+<p><img src="data:image/png;base64,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" style="display: block; margin: auto;" /></p>
+<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1"></a><span class="kw">plot</span>(rSclass)</span></code></pre></div>
+<p><img src="data:image/png;base64,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" style="display: block; margin: auto;" /></p>
+<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1"></a><span class="kw">plot</span>(rAge)</span></code></pre></div>
+<p><img src="data:image/png;base64,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" style="display: block; margin: auto;" /></p>
+<p>We can add these rasters as model inputs using the <code>stsim_InitialConditionsSpatial</code> datasheet.</p>
+<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1"></a>sheetName &lt;-<span class="st"> &quot;stsim_InitialConditionsSpatial&quot;</span></span>
+<span id="cb27-2"><a href="#cb27-2"></a>sheetData &lt;-<span class="st"> </span><span class="kw">list</span>(<span class="dt">StratumFileName =</span> stratumTif, </span>
+<span id="cb27-3"><a href="#cb27-3"></a>                  <span class="dt">StateClassFileName =</span> sclassTif, </span>
+<span id="cb27-4"><a href="#cb27-4"></a>                  <span class="dt">AgeFileName =</span> ageTif)</span>
+<span id="cb27-5"><a href="#cb27-5"></a><span class="kw">saveDatasheet</span>(myScenario, sheetData, sheetName)</span>
+<span id="cb27-6"><a href="#cb27-6"></a><span class="co">#&gt; Datasheet &lt;stsim_InitialConditionsSpatial&gt; saved</span></span></code></pre></div>
+<p>Let’s check if the rasters were entered correctly. We can extract rasters with <code>datasheetRaster</code> function.</p>
+<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1"></a>rStratumTest &lt;-<span class="st"> </span><span class="kw">datasheetRaster</span>(myScenario, sheetName, <span class="st">&quot;StratumFileName&quot;</span>)</span>
+<span id="cb28-2"><a href="#cb28-2"></a>rSclassTest &lt;-<span class="st"> </span><span class="kw">datasheetRaster</span>(myScenario, sheetName, <span class="st">&quot;StateClassFileName&quot;</span>)</span>
+<span id="cb28-3"><a href="#cb28-3"></a>rAgeTest &lt;-<span class="st"> </span><span class="kw">datasheetRaster</span>(myScenario, sheetName, <span class="st">&quot;AgeFileName&quot;</span>)</span>
+<span id="cb28-4"><a href="#cb28-4"></a><span class="kw">plot</span>(rStratumTest)</span>
+<span id="cb28-5"><a href="#cb28-5"></a><span class="kw">plot</span>(rSclassTest)</span>
+<span id="cb28-6"><a href="#cb28-6"></a><span class="kw">plot</span>(rAgeTest)</span></code></pre></div>
+<p><strong><em>Initial Conditions: Option 2 - Non-spatial</em></strong>. The second option is to set the proportions of each class, making this a non-spatial paramerization. To do so we use the <code>stsim_InitialConditionsNonSpatial</code> and <code>stsim_InitialConditionsNonSpatialDistribution</code> datasheets:</p>
+<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1"></a>sheetName &lt;-<span class="st"> &quot;stsim_InitialConditionsNonSpatial&quot;</span></span>
+<span id="cb29-2"><a href="#cb29-2"></a>sheetData &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">TotalAmount =</span> <span class="dv">100</span>, </span>
+<span id="cb29-3"><a href="#cb29-3"></a>                        <span class="dt">NumCells =</span> <span class="dv">100</span>, </span>
+<span id="cb29-4"><a href="#cb29-4"></a>                        <span class="dt">CalcFromDist =</span> F)</span>
+<span id="cb29-5"><a href="#cb29-5"></a><span class="kw">saveDatasheet</span>(myScenario, sheetData, sheetName)</span>
+<span id="cb29-6"><a href="#cb29-6"></a><span class="co">#&gt; Datasheet &lt;stsim_InitialConditionsNonSpatial&gt; saved</span></span>
+<span id="cb29-7"><a href="#cb29-7"></a><span class="kw">datasheet</span>(myScenario, sheetName)</span>
+<span id="cb29-8"><a href="#cb29-8"></a><span class="co">#&gt;   TotalAmount NumCells CalcFromDist</span></span>
+<span id="cb29-9"><a href="#cb29-9"></a><span class="co">#&gt; 1         100      100        FALSE</span></span>
+<span id="cb29-10"><a href="#cb29-10"></a></span>
+<span id="cb29-11"><a href="#cb29-11"></a>sheetName &lt;-<span class="st"> &quot;stsim_InitialConditionsNonSpatialDistribution&quot;</span></span>
+<span id="cb29-12"><a href="#cb29-12"></a>sheetData &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">StratumID =</span> <span class="st">&quot;Entire Forest&quot;</span>, </span>
+<span id="cb29-13"><a href="#cb29-13"></a>                        <span class="dt">StateClassID =</span> <span class="st">&quot;Coniferous&quot;</span>, </span>
+<span id="cb29-14"><a href="#cb29-14"></a>                        <span class="dt">RelativeAmount =</span> <span class="dv">1</span>)</span>
+<span id="cb29-15"><a href="#cb29-15"></a><span class="kw">saveDatasheet</span>(myScenario, sheetData, sheetName)</span>
+<span id="cb29-16"><a href="#cb29-16"></a><span class="co">#&gt; Datasheet &lt;stsim_InitialConditionsNonSpatialDistribution&gt; saved</span></span>
+<span id="cb29-17"><a href="#cb29-17"></a><span class="kw">datasheet</span>(myScenario, sheetName)</span>
+<span id="cb29-18"><a href="#cb29-18"></a><span class="co">#&gt;       StratumID StateClassID RelativeAmount</span></span>
+<span id="cb29-19"><a href="#cb29-19"></a><span class="co">#&gt; 1 Entire Forest   Coniferous              1</span></span></code></pre></div>
+<p><strong>Transition Targets</strong> defines targets, in units of area, to be reached by the allocation procedure within SyncroSim:</p>
+<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1"></a><span class="co"># Transition targets - set harvest to 0 for this scenario</span></span>
+<span id="cb30-2"><a href="#cb30-2"></a><span class="kw">saveDatasheet</span>(myScenario, </span>
+<span id="cb30-3"><a href="#cb30-3"></a>              <span class="kw">data.frame</span>(<span class="dt">TransitionGroupID =</span> <span class="st">&quot;Harvest&quot;</span>, </span>
+<span id="cb30-4"><a href="#cb30-4"></a>                         <span class="dt">Amount =</span> <span class="dv">0</span>),</span>
+<span id="cb30-5"><a href="#cb30-5"></a>              <span class="st">&quot;stsim_TransitionTarget&quot;</span>)</span>
+<span id="cb30-6"><a href="#cb30-6"></a><span class="co">#&gt; Datasheet &lt;stsim_TransitionTarget&gt; saved</span></span></code></pre></div>
+<p><strong>Output Options</strong> regulates the model outputs and determines the frequency at which syncrosim saves the model outputs:</p>
+<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1"></a><span class="co"># Output options</span></span>
+<span id="cb31-2"><a href="#cb31-2"></a><span class="co"># datasheet(myScenario, &quot;stsim_OutputOptions&quot;)</span></span>
+<span id="cb31-3"><a href="#cb31-3"></a>sheetData &lt;-<span class="st"> </span><span class="kw">data.frame</span>(</span>
+<span id="cb31-4"><a href="#cb31-4"></a>  <span class="dt">SummaryOutputSC =</span> T, <span class="dt">SummaryOutputSCTimesteps =</span> <span class="dv">1</span>,</span>
+<span id="cb31-5"><a href="#cb31-5"></a>  <span class="dt">SummaryOutputTR =</span> T, <span class="dt">SummaryOutputTRTimesteps =</span> <span class="dv">1</span>,</span>
+<span id="cb31-6"><a href="#cb31-6"></a>  <span class="dt">RasterOutputSC =</span> T, <span class="dt">RasterOutputSCTimesteps =</span> <span class="dv">1</span>,</span>
+<span id="cb31-7"><a href="#cb31-7"></a>  <span class="dt">RasterOutputTR =</span> T, <span class="dt">RasterOutputTRTimesteps =</span> <span class="dv">1</span>,</span>
+<span id="cb31-8"><a href="#cb31-8"></a>  <span class="dt">RasterOutputAge =</span> T, <span class="dt">RasterOutputAgeTimesteps =</span> <span class="dv">1</span></span>
+<span id="cb31-9"><a href="#cb31-9"></a>)</span>
+<span id="cb31-10"><a href="#cb31-10"></a><span class="kw">saveDatasheet</span>(myScenario, sheetData, <span class="st">&quot;stsim_OutputOptions&quot;</span>)</span>
+<span id="cb31-11"><a href="#cb31-11"></a><span class="co">#&gt; Datasheet &lt;stsim_OutputOptions&gt; saved</span></span></code></pre></div>
+<p>We are done parameterizing our simple “No Harvest” scenario. Let’s now define a new scenario that implements forest harvesting. Below, we create a second “Harvest” scenario that is a copy of the first scenario, but with a harvest level of 20 acres/year.</p>
+<div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1"></a>myScenarioHarvest &lt;-<span class="st"> </span><span class="kw">scenario</span>(myProject, </span>
+<span id="cb32-2"><a href="#cb32-2"></a>                              <span class="dt">scenario =</span> <span class="st">&quot;Harvest&quot;</span>, </span>
+<span id="cb32-3"><a href="#cb32-3"></a>                              <span class="dt">sourceScenario =</span> myScenario)</span>
+<span id="cb32-4"><a href="#cb32-4"></a><span class="kw">saveDatasheet</span>(myScenarioHarvest, <span class="kw">data.frame</span>(<span class="dt">TransitionGroupID =</span> <span class="st">&quot;Harvest&quot;</span>, </span>
+<span id="cb32-5"><a href="#cb32-5"></a>                                            <span class="dt">Amount =</span> <span class="dv">20</span>), </span>
+<span id="cb32-6"><a href="#cb32-6"></a>              <span class="st">&quot;stsim_TransitionTarget&quot;</span>)</span>
+<span id="cb32-7"><a href="#cb32-7"></a><span class="co">#&gt; Datasheet &lt;stsim_TransitionTarget&gt; saved</span></span></code></pre></div>
+<p>We can display the harvest levels for both scenarios.</p>
+<div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1"></a><span class="kw">datasheet</span>(myProject, <span class="dt">scenario =</span> <span class="kw">c</span>(<span class="st">&quot;Harvest&quot;</span>, <span class="st">&quot;No Harvest&quot;</span>), </span>
+<span id="cb33-2"><a href="#cb33-2"></a>          <span class="dt">name =</span> <span class="st">&quot;stsim_TransitionTarget&quot;</span>)</span>
+<span id="cb33-3"><a href="#cb33-3"></a><span class="co">#&gt;   ScenarioID ProjectID ScenarioName ParentID ParentName TransitionGroupID</span></span>
+<span id="cb33-4"><a href="#cb33-4"></a><span class="co">#&gt; 1          2         1   No Harvest       NA       &lt;NA&gt;           Harvest</span></span>
+<span id="cb33-5"><a href="#cb33-5"></a><span class="co">#&gt; 2          3         1      Harvest       NA       &lt;NA&gt;           Harvest</span></span>
+<span id="cb33-6"><a href="#cb33-6"></a><span class="co">#&gt;   Amount</span></span>
+<span id="cb33-7"><a href="#cb33-7"></a><span class="co">#&gt; 1      0</span></span>
+<span id="cb33-8"><a href="#cb33-8"></a><span class="co">#&gt; 2     20</span></span></code></pre></div>
+</div>
+<div id="run-scenarios-view-results" class="section level3">
+<h3>Run Scenarios &amp; View Results</h3>
+<p>We can now run the Scenario and look at the results. We run both Scenarios together; each Monte Carlo realization is run in parallel as a separate multiprocessing job. Running a Scenario generates a corresponding new child Scenario, called a <em>Results Scenario</em>, which contains the results of the run along with a snapshot of all the model inputs.</p>
+<div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1"></a>resultSummary &lt;-<span class="st"> </span><span class="kw">run</span>(myProject, <span class="dt">scenario =</span> <span class="kw">c</span>(<span class="st">&quot;Harvest&quot;</span>, <span class="st">&quot;No Harvest&quot;</span>), </span>
+<span id="cb34-2"><a href="#cb34-2"></a>                     <span class="dt">jobs =</span> <span class="dv">7</span>, <span class="dt">summary =</span> <span class="ot">TRUE</span>)</span>
+<span id="cb34-3"><a href="#cb34-3"></a><span class="co">#&gt; [1] &quot;Running scenario [3] Harvest&quot;</span></span>
+<span id="cb34-4"><a href="#cb34-4"></a><span class="co">#&gt; [1] &quot;Your free SyncroSim trial license expires in 2 day(s).&quot;</span></span>
+<span id="cb34-5"><a href="#cb34-5"></a><span class="co">#&gt; [1] &quot;To extend your free license for another year, open SyncroSim (for Windows), select &#39;About SyncroSim&#39; under&quot;</span></span>
+<span id="cb34-6"><a href="#cb34-6"></a><span class="co">#&gt; [1] &quot;the &#39;Help&#39; menu, and click on the &#39;Request&#39; button.  Alternatively enter the machine code that follows at:&quot;</span></span>
+<span id="cb34-7"><a href="#cb34-7"></a><span class="co">#&gt; [1] &quot;http://www.syncrosim.com/license&quot;</span></span>
+<span id="cb34-8"><a href="#cb34-8"></a><span class="co">#&gt; [1] &quot;Machine code: MDY5NTU3RDc5MTAwfE5VTEx8TlVMTHxFQzJBTUFaLVM1MVJMTUd8NTgxfDIwMjAtNS0yOQ==&quot;</span></span>
+<span id="cb34-9"><a href="#cb34-9"></a><span class="co">#&gt; [1] &quot;Running scenario [2] No Harvest&quot;</span></span>
+<span id="cb34-10"><a href="#cb34-10"></a><span class="co">#&gt; [1] &quot;Your free SyncroSim trial license expires in 2 day(s).&quot;</span></span>
+<span id="cb34-11"><a href="#cb34-11"></a><span class="co">#&gt; [1] &quot;To extend your free license for another year, open SyncroSim (for Windows), select &#39;About SyncroSim&#39; under&quot;</span></span>
+<span id="cb34-12"><a href="#cb34-12"></a><span class="co">#&gt; [1] &quot;the &#39;Help&#39; menu, and click on the &#39;Request&#39; button.  Alternatively enter the machine code that follows at:&quot;</span></span>
+<span id="cb34-13"><a href="#cb34-13"></a><span class="co">#&gt; [1] &quot;http://www.syncrosim.com/license&quot;</span></span>
+<span id="cb34-14"><a href="#cb34-14"></a><span class="co">#&gt; [1] &quot;Machine code: MDY5NTU3RDc5MTAwfE5VTEx8TlVMTHxFQzJBTUFaLVM1MVJMTUd8NTg5fDIwMjAtNS0yOQ==&quot;</span></span></code></pre></div>
+<p>To look at the results we first need to retrieve the unique <code>scenarioId</code> for each child <em>Result Scenario</em>.</p>
+<div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1"></a>resultIDNoHarvest &lt;-<span class="st"> </span><span class="kw">subset</span>(resultSummary, </span>
+<span id="cb35-2"><a href="#cb35-2"></a>                            parentID <span class="op">==</span><span class="st"> </span><span class="kw">scenarioId</span>(myScenario))<span class="op">$</span>scenarioId</span>
+<span id="cb35-3"><a href="#cb35-3"></a>resultIDHarvest &lt;-<span class="st"> </span><span class="kw">subset</span>(resultSummary, </span>
+<span id="cb35-4"><a href="#cb35-4"></a>                          parentID <span class="op">==</span><span class="st"> </span><span class="kw">scenarioId</span>(myScenarioHarvest))<span class="op">$</span>scenarioId</span></code></pre></div>
+<p>We then can retrieve tabular output regarding the projected State Class over time (for both scenarios combined) from the <code>stsim_OutputStratumState</code> Datasheet.</p>
+<div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1"></a>outputStratumState &lt;-<span class="st"> </span><span class="kw">datasheet</span>(myProject, </span>
+<span id="cb36-2"><a href="#cb36-2"></a>                                <span class="dt">scenario =</span> <span class="kw">c</span>(resultIDNoHarvest, resultIDHarvest), </span>
+<span id="cb36-3"><a href="#cb36-3"></a>                                <span class="dt">name =</span> <span class="st">&quot;stsim_OutputStratumState&quot;</span>)</span></code></pre></div>
+<p>Finally, we can get the State Class raster output (here for the Harvest scenario only).</p>
+<div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1"></a>myRastersTimestep5 &lt;-<span class="st"> </span><span class="kw">datasheetRaster</span>(myProject, </span>
+<span id="cb37-2"><a href="#cb37-2"></a>                                      <span class="dt">scenario =</span> resultIDHarvest, </span>
+<span id="cb37-3"><a href="#cb37-3"></a>                                      <span class="st">&quot;stsim_OutputSpatialState&quot;</span>, </span>
+<span id="cb37-4"><a href="#cb37-4"></a>                                      <span class="dt">timestep =</span> <span class="dv">5</span>)</span>
+<span id="cb37-5"><a href="#cb37-5"></a><span class="co"># Plot raster for timestep 5 (first realization only)</span></span>
+<span id="cb37-6"><a href="#cb37-6"></a>myRastersTimestep5</span>
+<span id="cb37-7"><a href="#cb37-7"></a><span class="co">#&gt; class      : RasterStack </span></span>
+<span id="cb37-8"><a href="#cb37-8"></a><span class="co">#&gt; dimensions : 10, 10, 100, 7  (nrow, ncol, ncell, nlayers)</span></span>
+<span id="cb37-9"><a href="#cb37-9"></a><span class="co">#&gt; resolution : 1, 1  (x, y)</span></span>
+<span id="cb37-10"><a href="#cb37-10"></a><span class="co">#&gt; extent     : 0, 10, 0, 10  (xmin, xmax, ymin, ymax)</span></span>
+<span id="cb37-11"><a href="#cb37-11"></a><span class="co">#&gt; crs        : +proj=utm +zone=10 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs </span></span>
+<span id="cb37-12"><a href="#cb37-12"></a><span class="co">#&gt; names      :  sc.it1.ts5,  sc.it2.ts5,  sc.it3.ts5,  sc.it4.ts5,  sc.it5.ts5,  sc.it6.ts5,  sc.it7.ts5 </span></span>
+<span id="cb37-13"><a href="#cb37-13"></a><span class="co">#&gt; min values : -2147483648, -2147483648, -2147483648, -2147483648, -2147483648, -2147483648, -2147483648 </span></span>
+<span id="cb37-14"><a href="#cb37-14"></a><span class="co">#&gt; max values :  2147483647,  2147483647,  2147483647,  2147483647,  2147483647,  2147483647,  2147483647</span></span>
+<span id="cb37-15"><a href="#cb37-15"></a><span class="kw">plot</span>(myRastersTimestep5[[<span class="dv">1</span>]])</span></code></pre></div>
+<p><img src="data:image/png;base64,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" style="display: block; margin: auto auto auto 0;" /></p>
+</div>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
