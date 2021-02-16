@@ -11,14 +11,14 @@ NULL
 #' Note that breakpoints are ignored unless ssimObject is a single scenario.
 #'
 #' @param ssimObject SsimLibrary/Project/Scenario or a list of Scenarios. Or the path to a library on disk.
-#' @param scenario character, integer, or vector of these. Scenario names or ids. Or NULL. Note that integer ids are slightly faster.
+#' @param scenario Character, integer, or vector of these. Scenario names or ids. Or NULL. Note that integer ids are slightly faster.
 #' @param summary Logical. If FALSE (default) result Scenario objects are returned. If TRUE (faster) result scenario ids are returned.
 #' @param jobs Integer. The number of jobs to run. Passed to SyncroSim where multithreading is handled.
 #' @param transformerName Character.  The name of the transformer to run.
 #' @param forceElements Logical. If TRUE then returns a single result scenario as a named list; otherwise returns a single result scenario as a Scenario object. Applies only when summary=FALSE.
 #' 
 #' @return 
-#' If \code{summary = FALSE} a result Scenario object or a named list of result Scenarios. 
+#' If \code{summary = FALSE}, returns a result Scenario object or a named list of result Scenarios. 
 #' The name is the parent scenario for each result. If \code{summary = TRUE}, returns summary info 
 #' for result scenarios.
 #' 
@@ -212,7 +212,7 @@ setMethod("run", signature(ssimObject = "BreakpointSession"), function(ssimObjec
       args[[i]] <- list(x = files[i], session = session(x@scenario), port = ports[i], breaks = x@scenario@breakpoints)
     }
 
-    # Following http://www.win-vector.com/blog/2016/01/parallel-computing-in-r/
+    # Following https://www.win-vector.com/blog/2016/01/parallel-computing-in-r/
     LogFileName <- paste0(dirname(filepath(x@scenario)), "/parallelLog.txt")
     if (file.exists(LogFileName)) file.remove(LogFileName)
 

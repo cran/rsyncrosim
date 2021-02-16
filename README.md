@@ -5,8 +5,12 @@
 
 ## The R interface to SyncroSim
 
-![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
-![R-CMD-check](https://github.com/syncrosim/rsyncrosim/workflows/R-CMD-check/badge.svg)
+[![License:
+MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT/)
+[![R-CMD-check](https://github.com/syncrosim/rsyncrosim/workflows/R-CMD-check/badge.svg)](https://github.com/syncrosim/rsyncrosim/actions/)
+[![CRAN
+Version](https://www.r-pkg.org/badges/version/rsyncrosim)](https://CRAN.R-project.org/package=rsyncrosim/)
+[![Downloads](https://cranlogs.r-pkg.org/badges/rsyncrosim?color=brightgreen)](https://CRAN.R-project.org/package=rsyncrosim/)
 
 ## About SyncroSim
 
@@ -37,30 +41,12 @@ operations in R.
 
 ### Installation
 
-*Windows:*
-
-  - [Download](https://github.com/syncrosim/rsyncrosim/releases/) the
-    latest latest release of the Windows rsyncrosim package as a zip
-    file (note that the package is not yet available from CRAN)
-
-  - Install the package zip file in R. For example in RStudio, open the
-    Install Packages window, select Package Archive File (for Install
-    from) and rsyncrosim\_X.X.X.zip (for Package archive), where X.X.X
-    is the version of the package.
-
-  - Run the [demonstration
-    script](https://github.com/syncrosim/rsyncrosim/blob/dev/demo/rsyncrosim-demo.R)
-    and/or view the package documentation (both also found in the doc
-    folder of the package once installed)
-
-*Linux:*
-
-Download and install the latest release of the rsyncrosim package.
+  - [Download](https://cran.r-project.org/package=rsyncrosim/) from CRAN
 
 ### Getting Started
 
-  - Run the [demonstration
-    script](https://github.com/syncrosim/rsyncrosim/blob/dev/demo/rsyncrosim-demo.R)
+  - Run the
+    [vignette](https://cran.r-project.org/package=rsyncrosim/vignettes/rsyncrosim_tutorial.html)
 
   - View the package
-    [documentation](https://github.com/syncrosim/rsyncrosim/blob/dev/rsyncrosim_1.2.1.pdf)
+    [documentation](https://cran.r-project.org/package=rsyncrosim/rsyncrosim.pdf)

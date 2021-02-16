@@ -27,7 +27,7 @@ myLibrary <- ssimLibrary(name = libraryName, session = mySession, overwrite = T)
 
 ## What is `rsyncrosim`?
 
-`rsyncrosim` is a package designed to facilitate the development of modeling workflows in R for the [SyncroSim](https://www.syncrosim.com/) software framework.
+`rsyncrosim` is a package designed to facilitate the development of modeling workflows in R for the [SyncroSim](https://syncrosim.com/) software framework.
 
 ## What is SyncroSim?
 
@@ -38,12 +38,13 @@ For more details consult the SyncroSim [online documentation](https://docs.syncr
 
 ### Installing SyncroSim and `rsyncrosim`
 
-Before using `rsyncrosim` you will first need to [download and install](https://www.syncrosim.com/download/) the SyncroSim software. Versions of SyncroSim exist for both Windows and Linux.
+Before using `rsyncrosim` you will first need to [download and install](https://syncrosim.com/download/) the SyncroSim software. Versions of SyncroSim exist for both Windows and Linux.
 
 Next you will need to install the `rsyncrosim` R package, either using [CRAN](https://cran.r-project.org/) or from the `rsyncrosim` [GitHub repository](https://github.com/syncrosim/rsyncrosim/releases/). Versions of `rsyncrosim` are available for both Windows and Linux.
-## Quickstart tutorial
 
-The following tutorial introduces `rsyncrosim` using the *stsim* [SyncroSim Package](https://docs.syncrosim.com/how_to_guides/package_overview.html). *st-sim* is a SyncroSim Package that lets you develop and run spatially-explicit, stochastic state-and-transition simulation models of landscape change. For more details on *stsim* consult the [ST-Sim online documentation](https://docs.syncrosim.com/). 
+### Quickstart tutorial
+
+The following tutorial introduces `rsyncrosim` using the *stsim* [SyncroSim Package](https://docs.syncrosim.com/how_to_guides/package_overview.html). *st-sim* is a SyncroSim Package that lets you develop and run spatially-explicit, stochastic state-and-transition simulation models of landscape change. For more details on *stsim* consult the [ST-Sim online documentation](https://docs.stsim.net/). 
 
 ### Preparation
 
@@ -317,7 +318,7 @@ plot(rSclassTest)
 plot(rAgeTest)
 ```
 
-***Initial Conditions: Option 2 - Non-spatial***. The second option is to set the proportions of each class, making this a non-spatial paramerization. To do so we use the 
+***Initial Conditions: Option 2 - Non-spatial***. The second option is to set the proportions of each class, making this a non-spatial parameterization. To do so we use the 
 `stsim_InitialConditionsNonSpatial` and `stsim_InitialConditionsNonSpatialDistribution` datasheets:
 ```{r}
 sheetName <- "stsim_InitialConditionsNonSpatial"
@@ -350,12 +351,15 @@ saveDatasheet(myScenario,
 # datasheet(myScenario, "stsim_OutputOptions")
 sheetData <- data.frame(
   SummaryOutputSC = T, SummaryOutputSCTimesteps = 1,
-  SummaryOutputTR = T, SummaryOutputTRTimesteps = 1,
+  SummaryOutputTR = T, SummaryOutputTRTimesteps = 1
+)
+saveDatasheet(myScenario, sheetData, "stsim_OutputOptions")
+sheetData <- data.frame(
   RasterOutputSC = T, RasterOutputSCTimesteps = 1,
   RasterOutputTR = T, RasterOutputTRTimesteps = 1,
   RasterOutputAge = T, RasterOutputAgeTimesteps = 1
 )
-saveDatasheet(myScenario, sheetData, "stsim_OutputOptions")
+saveDatasheet(myScenario, sheetData, "stsim_OutputOptionsSpatial")
 ```
 
 We are done parameterizing our simple "No Harvest" scenario. Let's now define a new scenario that implements forest harvesting. Below, we create a second "Harvest" scenario that is a copy of the first scenario, but with a harvest level of 20 acres/year.

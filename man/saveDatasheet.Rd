@@ -50,21 +50,21 @@ saveDatasheet(
 
 \item{data}{A dataframe, named vector, or list of these. One or more datasheets to load.}
 
-\item{name}{character or vector of these. The name(s) of the datasheet(s) to be saved. If a vector of names is provided, then a list must be provided for the data argument. Names provided here will override those provided with data argument's list.}
+\item{name}{Character or vector of these. The name(s) of the datasheet(s) to be saved. If a vector of names is provided, then a list must be provided for the data argument. Names provided here will override those provided with data argument's list.}
 
 \item{fileData}{Named list or raster stack. Names are file names (without paths), corresponding to entries in data. The elements are objects containing the data associated with each name. Currently only supports Raster objects as elements.}
 
-\item{append}{logical. If TRUE, data will be appended to the datasheet if possible, otherwise current values will be overwritten by data. See details for behaviour when append=TRUE. Default TRUE for project/library-scope datasheets, and FALSE for scenario-scope datasheets.}
+\item{append}{Logical. If TRUE, the incoming data will be appended to the datasheet if possible.  Default TRUE for project/library-scope datasheets, and FALSE for scenario-scope datasheets. See 'details' for more information about this argument.}
 
-\item{forceElements}{logical. If FALSE (default) a single return message will be returns as a character string. Otherwise it will be returned in a list.}
+\item{forceElements}{Logical. If FALSE (default) a single return message will be returned as a character string. Otherwise it will be returned in a list.}
 
-\item{force}{logical. If datasheet scope is project/library, and append=FALSE, datasheet will be deleted before loading the new data. This can also delete other definitions and results, so user will be prompted for approval unless force=TRUE.}
+\item{force}{Logical. If datasheet scope is project/library, and append=FALSE, datasheet will be deleted before loading the new data. This can also delete other definitions and results, so user will be prompted for approval unless force=TRUE.}
 
 \item{breakpoint}{Set to TRUE when modifying datasheets in a breakpoint function.}
 
-\item{import}{logical. Set to TRUE to import the data after saving.}
+\item{import}{Logical. Set to TRUE to import the data after saving.}
 
-\item{path}{character.  An optional output path.}
+\item{path}{Character.  An optional output path.}
 }
 \value{
 This function invisibly returns a vector or list of logical values for each input: `TRUE` upon success (i.e.successful save)
@@ -74,8 +74,6 @@ and `FALSE` upon failure.
 Saves datasheets to a SsimLibrary/Project/Scenario.
 }
 \details{
-Cautionary note re append=FALSE: Deleting project and library level datasheets that contain lookups will also delete other definitions and results that rely on these lookups.
-
 ssimObject/project/scenario should identify a single ssimObject.
 
 If fileData !=NULL, each element of names(fileData) should correspond uniquely to at most one entry in data. If a name is not found in data the element will be ignored with a warning.
@@ -84,9 +82,10 @@ If names(fileData) are not filepaths (faster, recommended), rsyncrosim will writ
 rsyncrosim will write each element of fileData directly to the appropriate SyncroSim input/output folders.
 If fileData != NULL, data should be a dataframe, vector, or list of length 1, not a list of length >1.
 
-There are 2 circumstances in which data will not be appended even if append=TRUE:
+About the 'append' argument:
+
 \itemize{
-  \item New data will not be appended if it is redundant with existing data, and the table does not allow redundancy.
-  \item Old data will be replaced by new data if the datasheet allows only a single row.
+  \item A datasheet is a VALIDATION SOURCE if its data can be used to validate column values in a different datasheet.
+  \item The append argument will be ignored if the datasheet is a validation source and has a project scope.  In this case the data will be MERGED.
 }
 }

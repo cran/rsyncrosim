@@ -5,14 +5,14 @@ NULL
 
 #' Adds a package to SyncroSim
 #'
-#' Adds a package to SyncroSim. This functions will query the syncrosim 
+#' Adds a package to SyncroSim. This functions will query the SyncroSim 
 #' package server for the package name provided as input.
 #'
 #' @param name Character string.  The name of the package to install.
 #' @param session Session.
 #' 
 #' @return 
-#' This function will inivisibly return `TRUE` upon success (i.e.successful 
+#' This function will invisibly return `TRUE` upon success (i.e.successful 
 #' install) and `FALSE` upon failure.
 #' 
 #' @export

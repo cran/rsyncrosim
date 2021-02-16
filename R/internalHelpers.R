@@ -20,8 +20,17 @@ backupEnabled <- function(path) {
   drv <- DBI::dbDriver("SQLite")
   con <- DBI::dbConnect(drv, path)
 
-  ret <- DBI::dbGetQuery(con, "SELECT * FROM core_Backup")
-  DBI::dbDisconnect(con)
+  tableExists <- DBI::dbExistsTable(con, "core_Backup")
+  
+  # Check for existence of table, if it does not exist assume we want to 
+  # go ahead with the backup
+  if(tableExists){
+    ret <- DBI::dbGetQuery(con, "SELECT * FROM core_Backup")
+    DBI::dbDisconnect(con)
+  } else{
+    DBI::dbDisconnect(con)
+    return(TRUE)
+  }
 
   if (is.na(ret$BeforeUpdate)) {
     return(FALSE)
@@ -36,8 +45,16 @@ backupEnabled <- function(path) {
 
 deleteDatasheet <- function(x, datasheet, datasheets, cProj = NULL, cScn = NULL, cProjName = NULL, cScnName = NULL, out = list(), force) {
   out <- list()
+  lib = ssimLibrary(.filepath(x), summary=T)
+  pkg = lib$value[lib$property == "Package Name:"]
+  
   for (j in seq(length.out = length(datasheet))) {
     cName <- datasheet[j]
+    
+    if (!grepl("_", cName, fixed = TRUE)) {
+      cName <- paste0(pkg, "_", cName)
+    }
+    
     cSheet <- subset(datasheets, name == cName)
     if (nrow(cSheet) == 0) {
       stop("datasheet ", cName, " not found in object identified by ssimObject/project/scenario arguments.")
@@ -159,7 +176,7 @@ camel <- function(x) {
   x
 }
 
-# http://stackoverflow.com/questions/26083625/how-do-you-include-data-frame-output-inside-warnings-and-errors
+# https://stackoverflow.com/questions/26083625/how-do-you-include-data-frame-output-inside-warnings-and-errors
 printAndCapture <- function(x) {
   paste(capture.output(print(x)), collapse = "\n")
 }
@@ -576,7 +593,7 @@ setMethod("deleteLibrary", signature(ssimLibrary = "SsimLibrary"), function(ssim
 
 setMethod("deleteLibrary", signature(ssimLibrary = "character"), function(ssimLibrary, force) {
   if (!file.exists(ssimLibrary)) {
-    return(paste0("Library not found: ", ssimLibrary))
+    stop(paste0("Library not found: ", ssimLibrary))
   }
   if (force) {
     answer <- "y"
