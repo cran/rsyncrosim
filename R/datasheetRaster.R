@@ -1,37 +1,99 @@
-# Copyright (c) 2019 Apex Resource Management Solution Ltd. (ApexRMS). All rights reserved.
-# GPL v.3 License
+# Copyright (c) 2021 Apex Resource Management Solution Ltd. (ApexRMS). All rights reserved.
+# MIT License
 #' @include AAAClassDefinitions.R
 NULL
 
-#' Get spatial inputs or outputs from a Scenario(s).
+#' Retrieve spatial data from a SyncroSim Datasheet
 #'
-#' Get spatial inputs or outputs from one or more SyncroSim scenarios.
-#' @details
+#' This function retrieves spatial columns from one or more SyncroSim 
+#' \code{\link{Scenario}} Datasheets.
 #'
-#'
-#' The names() of the returned raster stack contain metadata.
-#' For datasheets without Filename this is: paste0(<datasheet name>,".Scn",<scenario id>,".",<tif name>)
-#' For datasheets containing Filename this is: paste0(<datasheet name>,".Scn",<scenario id>,".It",<iteration>,".Ts",<timestep>)
-#'
-#' @param ssimObject SsimLibrary/Project/Scenario or list of Scenarios. If SsimLibrary/Project, then scenario argument is required.
-#' @param datasheet character string. The name of the datasheet containing the raster data.
-#' @param column character string. The name of the column in the datasheet containing the filenames for raster data. If NULL then use the first column that contains raster filenames.
-#' @param scenario character string, integer, or vector of these. The scenarios to include. Required if ssimObject is an SsimLibrary/Project, ignored if ssimObject is a list of Scenarios.
-#' @param iteration integer, character string, or vector of integer/character strings. Iteration(s) to include. If NULL then all iterations are included. If no Iteration column in the datasheet, then ignored.
-#' @param timestep integer, character string, or vector of integer/character string. Timestep(s) to include. If NULL then all timesteps are included.  If no Timestep column in the datasheet, then ignored.
-#' @param subset logical expression indicating datasheet rows to return. e.g. expression(grepl("Ts0001",Filename,fixed=T)). See subset() for details.
-#' @param forceElements logical. If TRUE then returns a single raster as a RasterStack; otherwise returns a single raster as a RasterLayer directly.
+#' @param ssimObject SsimLibrary/Project/Scenario object or list of Scenario objects. If 
+#'     SsimLibrary/Project, then \code{scenario} argument is required
+#' @param datasheet character string. The name of the Datasheet containing the 
+#'     raster data
+#' @param column character string. The name of the column in the datasheet containing 
+#'     the file names for raster data. If \code{NULL} (default) then use the first 
+#'     column that contains raster file names
+#' @param scenario character string, integer, or vector of these. The Scenarios to 
+#'     include. Required if SsimObject is an SsimLibrary/Project, ignored if 
+#'     SsimObject is a list of Scenarios (optional)
+#' @param iteration integer, character string, or vector of integer/character strings. 
+#'     Iteration(s) to include. If \code{NULL} (default) then all iterations are 
+#'     included. If no Iteration column is in the Datasheet, then ignored
+#' @param timestep integer, character string, or vector of integer/character string. 
+#'     Timestep(s) to include. If \code{NULL} (default) then all timesteps are 
+#'     included.  If no Timestep column is in the Datasheet, then ignored
+#' @param subset logical expression indicating Datasheet rows to return. 
+#'     e.g. expression(grepl("Ts0001", Filename, fixed=T)). See subset() for 
+#'     details (optional)
+#' @param forceElements logical. If \code{TRUE} then returns a single raster as a RasterStack; 
+#'     otherwise returns a single raster as a RasterLayer directly. Default is 
+#'     \code{FALSE}
 #' 
 #' @return 
 #' A RasterLayer, RasterStack or RasterBrick object. See raster package documentation for details.
 #' 
+#' @details 
+#' The names of the returned raster stack contain metadata.
+#' For Datasheets without Filename this is: 
+#' 
+#' \code{paste0(<datasheet name>,".Scn",<scenario id>,".",<tif name>)}.
+#' 
+#' For Datasheets containing Filename this is: 
+#' 
+#' \code{paste0(<datasheet name>,".Scn",<scenario id>,".It",<iteration>,".Ts",<timestep>)}.
+#' 
 #' @examples
-#' \dontrun{
-#' ## Not run as it would require a result scenario (long runtime)
-#' datasheetRaster(myResult,
-#'   datasheet = "OutputSpatialState",
-#'   subset = expression(grepl("Ts0001", Filename, fixed = TRUE))
+#' \donttest{
+#' # Install the helloworldSpatial package from the server
+#' addPackage("helloworldSpatial")
+#' 
+#' # Specify file path and name of new SsimLibrary
+#' myLibraryName <- file.path(tempdir(), "testlib_datasheetRaster")
+#' 
+#' # Set up a SyncroSim Session
+#' mySession <- session()
+#' 
+#' # Use the example template library from helloworldSpatial
+#' myLibrary <- ssimLibrary(name = myLibraryName,
+#'                          session = mySession,
+#'                          package = "helloworldSpatial",
+#'                          template = "example-library",
+#'                          overwrite=TRUE)
+#' 
+#' # Set up Project and Scenario
+#' myProject <- project(myLibrary, project = "Definitions")
+#' myScenario <- scenario(myProject, scenario = "My Scenario")
+#' 
+#' # Run Scenario to generate results
+#' resultScenario <- run(myScenario)
+#' 
+#' # Extract specific Datasheet rasters by iteration and timestep
+#' resultRaster <- datasheetRaster(resultScenario,
+#'                   datasheet = "IntermediateDatasheet",
+#'                   column = "OutputRasterFile",
+#'                   iteration = 3,
+#'                   timestep = 2
 #' )
+#' 
+#' # Extract specific Datasheet rasters using pattern matching
+#' resultDatasheet <- datasheet(resultScenario, name = "IntermediateDatasheet")
+#' head(resultDatasheet)
+#' resultRaster <- datasheetRaster(resultScenario, 
+#'                   datasheet = "IntermediateDatasheet",
+#'                   column = "OutputRasterFile",
+#'                   subset = expression(grepl("ts20", 
+#'                                              resultDatasheet$OutputRasterFile,
+#'                                              fixed = TRUE))
+#' )
+#' 
+#' # Return the raster Datasheets as a raster stack
+#' resultRaster <- datasheetRaster(resultScenario, 
+#'                  datasheet = "IntermediateDatasheet",
+#'                  column = "OutputRasterFile",
+#'                  forceElements = TRUE
+#'                  )
 #' }
 #' 
 #' @export
@@ -125,7 +187,7 @@ setMethod("datasheetRaster", signature(ssimObject = "Scenario"), function(ssimOb
   x <- ssimObject
   cSheets <- .datasheets(x)
   if (!is.element(datasheet, cSheets$name)) {
-    cSheets <- .datasheets(x, refresh = TRUE)
+    cSheets <- .datasheets(x, core = TRUE)
   }
   
   # TO DO: make sure datasheet is spatial after opening

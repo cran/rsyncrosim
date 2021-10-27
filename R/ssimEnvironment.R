@@ -1,15 +1,25 @@
-# Copyright (c) 2019 Apex Resource Management Solution Ltd. (ApexRMS). All rights reserved.
-# GPL v.3 License
+# Copyright (c) 2021 Apex Resource Management Solution Ltd. (ApexRMS). All rights reserved.
+# MIT License
 
 #' SyncroSim Environment
 #'
-#' Retrieves SyncroSim specific environment variables.
+#' This function is part of a set of functions designed to facilitate the
+#' development of R-based Syncrosim Packages. \code{ssimEnvironment} retrieves
+#' specific environment variables.
 #'
 #' @return 
-#' Returns a data.frame of SyncroSim specific environment variables.
+#' Returns a single-row data.frame of SyncroSim specific environment variables.
+#' 
+#' @examples 
+#' \dontrun{
+#' # Get the whole set of variables
+#' e <- ssimEnvironment()
+#' 
+#' # Get the path to transfer directory, for instance
+#' transferdir <- e$TransferDirectory
+#' }
 #' 
 #' @export
-#' @rdname ssimEnvironment
 ssimEnvironment <- function() {
   return(data.frame(
     PackageDirectory = Sys.getenv(tolower("SSIM_PACKAGE_DIRECTORY"), unset = NA),
@@ -64,109 +74,142 @@ envCreateTempFolder <- function(folderName) {
 
 #' SyncroSim DataSheet Input Folder
 #'
-#' Creates and returns a SyncroSim DataSheet Input Folder.
+#' This function is part of a set of functions designed to facilitate the
+#' development of R-based Syncrosim Packages. This function creates and returns 
+#' a SyncroSim Datasheet Input Folder.
 #'
-#' @param scenario Scenario.  A SyncroSim result scenario.
-#' @param datasheetName character.  The input datasheet name.
+#' @param scenario \code{\link{Scenario}} object. A SyncroSim result Scenario
+#' @param datasheetName character. The input Datasheet name
 #' 
 #' @return 
-#' Returns a folder name for the specified data sheet.
+#' Returns a folder name for the specified Datasheet.
+#' 
+#' @examples 
+#' \dontrun{
+#' inputFolder <- runtimeInputFolder()
+#' }
 #' 
 #' @export
-#' @rdname ssimEnvironment-input
-envInputFolder <- function(scenario, datasheetName) {
+runtimeInputFolder <- function(scenario, datasheetName) {
   envValidateEnvironment()
   return(envCreateScenarioFolder(scenario, ssimEnvironment()$InputDirectory, datasheetName))
 }
 
 #' SyncroSim DataSheet Output Folder
 #'
-#' Creates and returns a SyncroSim DataSheet Output Folder.
+#' This function is part of a set of functions designed to facilitate the
+#' development of R-based Syncrosim Packages. This function creates and returns 
+#' a SyncroSim DataSheet Output Folder.
 #'
-#' @param scenario Scenario.  A SyncroSim result scenario.
-#' @param datasheetName character.  The output datasheet name.
+#' @param scenario \code{\link{Scenario}} object. A SyncroSim result Scenario
+#' @param datasheetName character. The output Datasheet name
 #' 
 #' @return 
-#' Returns a folder name for the specified data sheet.
+#' Returns a folder name for the specified datasheet.
+#' 
+#' @examples 
+#' \dontrun{
+#' outputFolder <- runtimeOutputFolder()
+#' }
 #' 
 #' @export
-#' @rdname ssimEnvironment-output
-envOutputFolder <- function(scenario, datasheetName) {
+runtimeOutputFolder <- function(scenario, datasheetName) {
   envValidateEnvironment()
   return(envCreateScenarioFolder(scenario, ssimEnvironment()$OutputDirectory, datasheetName))
 }
 
 #' SyncroSim Temporary Folder
 #'
-#' Creates and returns a SyncroSim Temporary Folder.
+#' This function is part of a set of functions designed to facilitate the
+#' development of R-based Syncrosim Packages. This function creates and returns 
+#' a SyncroSim Temporary Folder.
 #'
-#' @param folderName character.  The folder name.
+#' @param folderName character. The folder name
 #' 
 #' @return 
 #' Returns a temporary folder name.
 #' 
+#' @examples 
+#' \dontrun{
+#' tempFolder <- runtimeTempFolder()
+#' }
+#' 
 #' @export
-#' @rdname ssimEnvironment-temp
-envTempFolder <- function(folderName) {
+runtimeTempFolder <- function(folderName) {
   envValidateEnvironment()
   return(envCreateTempFolder(folderName))
 }
 
-#' Reports progress for a SyncroSim simulation
-#'
-#' Reports progress for a SyncroSim simulation.
-#'
-#' @param iteration integer.  The current iteration.
-#' @param timestep integer.  The current timestep.
+#' Sets the progress bar in the SyncroSim User Interface
 #' 
-#' @export
-#' @rdname ssimEnvironment-progress
-envReportProgress <- function(iteration, timestep) {
-  envValidateEnvironment()
-  cat(sprintf("ssim-task-status=Simulating -> Iteration is %d - Timestep is %d\r\n", iteration, timestep))
-  flush.console()
-}
-
-#' Begins a SyncroSim simulation
-#'
-#' Begins a SyncroSim simulation.
-#'
-#' @param totalSteps integer.  The total number of steps in the simulation.
+#' This function is designed to facilitate the development of R-based Syncrosim 
+#' Packages, such as beginning, stepping, ending, and reporting the progress 
+#' for a SyncroSim simulation.
 #' 
-#' @export
-#' @rdname ssimEnvironment-progress
-envBeginSimulation <- function(totalSteps) {
-  envValidateEnvironment()
-  cat(sprintf("ssim-task-start=%d\r\n", totalSteps))
-  flush.console()
-}
-
-#' Steps a SyncroSim simulation
-#'
-#' Steps a SyncroSim simulation.
+#' @param type character. Update to apply to progress bar. Options include
+#' "begin", "end", "step", and "report" (Default is "step")
+#' @param iteration integer. The current iteration. Only used if 
+#' \code{type = "report"}
+#' @param timestep integer. The current timestep. Only used if 
+#' \code{type = "report"}
+#' @param totalSteps integer. The total number of steps in the simulation. Only
+#' used if \code{type = "begin"}
 #' 
 #' @return 
-#' No returned value, used for side effects.
-#'
-#' @export
-#' @rdname ssimEnvironment-progress
-envStepSimulation <- function() {
-  envValidateEnvironment()
-  cat("ssim-task-step=1\r\n")
-  flush.console()
-}
-
-#' Ends a SyncroSim simulation
-#'
-#' Ends a SyncroSim simulation.
+#' No returned value, used for side effects
 #' 
-#' @return
-#' No returned value, used for side effects.
-#'
+#' @examples 
+#' \dontrun{
+#' # Begin the progress bar for a simulation
+#' progressBar(type = "begin", totalSteps = numIterations * numTimesteps)
+#' 
+#' # Increase the progress bar by one step for a simulation
+#' progressBar(type = "step")
+#' 
+#' # Report progress for a simulation
+#' progressBar(type = "report", iteration = iter, timestep = ts)
+#' 
+#' # End the progress bar for a simulation
+#' progressBar(type = "end")
+#' }
+#' 
 #' @export
-#' @rdname ssimEnvironment-progress
-envEndSimulation <- function() {
+progressBar <- function(type = "step", iteration = NULL, timestep = NULL, totalSteps = NULL) {
+  
+  # Check Program Directory
   envValidateEnvironment()
-  cat("ssim-task-end=True\r\n")
-  flush.console()
+  
+  # Begin progress bar tracking
+  if (type == "begin") {
+    if (is.numeric(totalSteps)) {
+      cat(sprintf("ssim-task-start=%d\r\n", totalSteps))
+      flush.console()
+    } else {
+      stop("totalSteps argument must be an integer")
+    }
+    
+  # End progress bar tracking
+  } else if (type == "end") {
+    cat("ssim-task-end=True\r\n")
+    flush.console()
+    
+  # Step progress bar
+  } else if (type == "step") {
+    cat("ssim-task-step=1\r\n")
+    flush.console()
+  
+  # Report iteration and timestep in UI  
+  } else if (type == "report") {
+    if (is.numeric(iteration) & is.numeric(timestep)) {
+      cat(sprintf("ssim-task-status=Simulating -> Iteration is %d - Timestep is %d\r\n", iteration, timestep))
+      flush.console()
+    } else {
+      stop("iteration and timestep arguments must be integers")
+    }
+  
+  # Throw error if type not specified correctly  
+  } else {
+    stop("Invalid type argument")
+  }
+  
 }

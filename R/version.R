@@ -1,16 +1,25 @@
-# Copyright (c) 2019 Apex Resource Management Solution Ltd. (ApexRMS). All rights reserved.
-# GPL v.3 License
+# Copyright (c) 2021 Apex Resource Management Solution Ltd. (ApexRMS). All rights reserved.
+# MIT License
 #' @include AAAClassDefinitions.R
 NULL
 
-#' The SyncroSim version
+#' Retrieves SyncroSim version
 #'
-#' The version of a SyncroSim Session.
+#' Retrieves the version of a SyncroSim Session.
 #'
-#' @param session Session.
+#' @param session \code{\link{Session}} object
 #' 
 #' @return
 #' A character string e.g. "2.2.13".
+#' 
+#' @examples 
+#' \donttest{
+#' # Set SyncroSim Session
+#' mySession <- session()
+#' 
+#' # Retrieve version of SyncroSim associated with Session
+#' version(mySession)
+#' }
 #' 
 #' @export
 setGeneric("version", function(session = NULL) standardGeneric("version"))

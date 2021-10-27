@@ -1,17 +1,32 @@
-# Copyright (c) 2019 Apex Resource Management Solution Ltd. (ApexRMS). All rights reserved.
-# GPL v.3 License
+# Copyright (c) 2021 Apex Resource Management Solution Ltd. (ApexRMS). All rights reserved.
+# MIT License
 #' @include AAAClassDefinitions.R
 NULL
 
-#' The last date a SsimLibrary/Project/Scenario was modified.
+#' Last date a SsimLibrary, Project or Scenario was modified
 #'
-#' The most recent modification date of an SsimLibrary/Project/Scenario.
+#' The most recent modification date of a \code{\link{SsimLibrary}}, 
+#' \code{\link{Project}} or \code{\link{Scenario}}.
 #'
-#' @param ssimObject SsimLibrary/Project/Scenario.
+#' @param ssimObject  \code{\link{SsimLibrary}}, \code{\link{Project}},
+#'     or \code{\link{Scenario}} object
 #' 
 #' @return 
-#' A character string of the date and time of the most recent modification 
-#' to the ssimObject provided as input.
+#' A character string: date and time of the most recent modification 
+#' to the SsimObject provided as input.
+#' 
+#' @examples
+#' \dontrun{
+#' # Specify file path and name of new SsimLibrary
+#' myLibraryName <- file.path(tempdir(), "testlib")
+#' 
+#' # Set up a SyncroSim Session and SsimLibrary
+#' mySession <- session()
+#' myLibrary <- ssimLibrary(name = myLibraryName, session = mySession)
+#' 
+#' # Check the last date of modification of the SsimLibrary
+#' dateModified(myLibrary)
+#' }
 #' 
 #' @export
 setGeneric("dateModified", function(ssimObject) standardGeneric("dateModified"))

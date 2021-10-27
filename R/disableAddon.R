@@ -1,28 +1,41 @@
-# Copyright (c) 2019 Apex Resource Management Solution Ltd. (ApexRMS). All rights reserved.
-# GPL v.3 License
+# Copyright (c) 2021 Apex Resource Management Solution Ltd. (ApexRMS). All rights reserved.
+# MIT License
 #' @include AAAClassDefinitions.R
 NULL
 
-#' Disable addon or addons.
+#' Disable addon package(s)
 #'
-#' Disable addon or addons of an SsimLibrary, or Project/Scenario with an associated SsimLibrary.
+#' Disable \code{\link{addon}} package(s) of a \code{\link{SsimLibrary}}.
 #'
-#' @param ssimLibrary SsimLibrary.
-#' @param name Character string or vector of addon names.
+#' @param ssimLibrary \code{\link{SsimLibrary}} object
+#' @param name character string or vector of addon name(s)
 #' 
 #' @return
-#' This function invisibly returns `TRUE` upon success (i.e.successful deactivation of the addon) 
-#' and `FALSE` upon failure.
+#' This function invisibly returns \code{TRUE} upon success (i.e.successful deactivation
+#' of the addon) or \code{FALSE} upon failure.
+#' 
+#' @seealso 
+#' \code{\link{addon}}
 #' 
 #' @examples
 #' \donttest{
-#' temp_dir <- tempdir()
-#' myses <- session()
-#' myLibrary <- ssimLibrary(name = file.path(temp_dir,"testlib"), session = myses)
+#' # Install "stsim" SyncroSim package
+#' addPackage("stsim")
 #' 
-#' enableAddon(myLibrary, c("stsimecodep"))
+#' # Specify file path and name of new SsimLibrary
+#' myLibraryName <- file.path(tempdir(), "testlib")
+#' 
+#' # Set up a SyncroSim Session, SsimLibrary, and Project
+#' mySession <- session()
+#' myLibrary <- ssimLibrary(name = myLibraryName, session = mySession, 
+#'                          package = "stsim")
+#' 
+#' # Enable addon package
+#' enableAddon(myLibrary, c("stsimsf"))
 #' addon(myLibrary)
-#' disableAddon(myLibrary, c("stsimecodep"))
+#' 
+#' # Disable addon package
+#' disableAddon(myLibrary, c("stsimsf"))
 #' addon(myLibrary)
 #' }
 #' 

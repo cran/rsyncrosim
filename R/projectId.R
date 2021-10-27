@@ -1,16 +1,32 @@
-# Copyright (c) 2019 Apex Resource Management Solution Ltd. (ApexRMS). All rights reserved.
-# GPL v.3 License
+# Copyright (c) 2021 Apex Resource Management Solution Ltd. (ApexRMS). All rights reserved.
+# MIT License
 #' @include AAAClassDefinitions.R
 NULL
 
-#' The projectId of a SyncroSim project or scenario.
+#' Retrieves projectId of SyncroSim Project or Scenario
 #'
-#' Retrieves the projectId of a SyncroSim Project or Scenario.
+#' Retrieves the projectId of a SyncroSim \code{\link{Project}} or \code{\link{Scenario}}.
 #'
-#' @param ssimObject Project/Scenario.
+#' @param ssimObject \code{\link{Scenario}} or \code{\link{Project}} object
 #' 
 #' @return 
-#' Returns an integer project id.
+#' An integer: project id.
+#' 
+#' @examples 
+#' \donttest{
+#' # Set the file path and name of the new SsimLibrary
+#' myLibraryName <- file.path(tempdir(),"testlib")
+#' 
+#' # Set the SyncroSim Session, SsimLibrary, Project, and Scenario
+#' mySession <- session()
+#' myLibrary <- ssimLibrary(name = myLibraryName, session = mySession) 
+#' myProject <- project(myLibrary, project = "Definitions")
+#' myScenario <- scenario(myProject, scenario = "My Scenario")
+#' 
+#' # Get Project ID for SyncroSim Project and Scenario
+#' projectId(myProject)
+#' projectId(myScenario)
+#' }
 #' 
 #' @export
 setGeneric("projectId", function(ssimObject) standardGeneric("projectId"))

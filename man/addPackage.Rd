@@ -5,7 +5,7 @@
 \alias{addPackage,ANY,character-method}
 \alias{addPackage,ANY,missingOrNULL-method}
 \alias{addPackage,ANY,Session-method}
-\title{Adds a package to SyncroSim}
+\title{Adds package to SyncroSim Installation}
 \usage{
 addPackage(name, session = NULL)
 
@@ -16,15 +16,34 @@ addPackage(name, session = NULL)
 \S4method{addPackage}{ANY,Session}(name, session = NULL)
 }
 \arguments{
-\item{name}{Character string.  The name of the package to install.}
+\item{name}{character string.  The name or file path of the package to 
+install}
 
-\item{session}{Session.}
+\item{session}{\code{\link{Session}} object. If \code{NULL} (default),
+\code{session()} will be used}
 }
 \value{
-This function will invisibly return `TRUE` upon success (i.e.successful 
-install) and `FALSE` upon failure.
+Invisibly returns \code{TRUE} upon success (i.e.successful 
+install) and \code{FALSE} upon failure.
 }
 \description{
-Adds a package to SyncroSim. This functions will query the SyncroSim 
-package server for the package name provided as input.
+This function installs a package to the SyncroSim \code{\link{Session}}.
+If only the package name is provided as input, the function queries the 
+SyncroSim package server for the specified package. If a file path is 
+provided as input, the function adds a package to SyncroSim from a local 
+package file (ends in ".ssimpkg"). The list of SyncroSim packages can be 
+found \href{https://syncrosim.com/packages/}{here}.
+}
+\examples{
+\dontrun{
+# Create a new SyncroSim Session
+mySession <- session()
+
+# Add package from the package server
+addPackage("stsim", session = mySession)
+
+# Add package using a local file path
+addPackage("c:/path/to/stsim.ssimpkg")
+}
+
 }

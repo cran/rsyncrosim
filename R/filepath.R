@@ -1,16 +1,32 @@
-# Copyright (c) 2019 Apex Resource Management Solution Ltd. (ApexRMS). All rights reserved.
-# GPL v.3 License
+# Copyright (c) 2021 Apex Resource Management Solution Ltd. (ApexRMS). All rights reserved.
+# MIT License
 #' @include AAAClassDefinitions.R
 NULL
 
-#' The path to a SyncroSim object on disk
+#' Retrieves the path to a SyncroSim object on disk
 #'
-#' The path to a SyncroSim Session, SSimLibrary, Project or Scenario on disk.
+#' Retrieves the path to a SyncroSim \code{\link{Session}}, 
+#' \code{\link{SsimLibrary}}, \code{\link{Project}} or \code{\link{Scenario}} 
+#' on disk.
 #'
-#' @param ssimObject An object containing a filepath.
+#' @param ssimObject \code{\link{Session}}, 
+#'     \code{\link{Project}}, or \code{\link{SsimLibrary}} object
 #' 
 #' @return 
 #' A character string: the path to a SyncroSim object on disk.
+#' 
+#' @examples 
+#' \donttest{
+#' # Specify file path and name of new SsimLibrary
+#' myLibraryName <- file.path(tempdir(), "testlib")
+#' 
+#' # Set up a SyncroSim Session and SsimLibrary
+#' mySession <- session()
+#' myLibrary <- ssimLibrary(name = myLibraryName, session = mySession)
+#' 
+#' # Get the file path
+#' myFilePath <- filepath(myLibrary)
+#' }
 #' 
 #' @export
 setGeneric("filepath", function(ssimObject) standardGeneric("filepath"))
@@ -26,14 +42,30 @@ setMethod("filepath", signature(ssimObject = "Session"), function(ssimObject) ss
 #' @rdname filepath
 setMethod("filepath", signature(ssimObject = "SsimObject"), function(ssimObject) ssimObject@filepath)
 
-#' The temporary file path to a SyncroSim object on disk
+#' Retrieves the temporary file path to a SyncroSim object on disk
 #'
-#' The temporary file path to a SyncroSim Session, SSimLibrary, Project or Scenario on disk.
+#' Retrieves the temporary file path to a SyncroSim \code{\link{Session}}, 
+#' \code{\link{SsimLibrary}}, \code{\link{Project}} or \code{\link{Scenario}} 
+#' on disk.
 #'
-#' @param ssimObject An object containing a filepath.
+#' @param ssimObject \code{\link{Session}}, 
+#'     \code{\link{Project}}, or \code{\link{SsimLibrary}} object
 #' 
 #' @return 
 #' A character string: the temporary file path to a SyncroSim object on disk.
+#' 
+#' @examples 
+#' \donttest{
+#' # Specify file path and name of new SsimLibrary
+#' myLibraryName <- file.path(tempdir(), "testlib")
+#' 
+#' # Set up a SyncroSim Session and SsimLibrary
+#' mySession <- session()
+#' myLibrary <- ssimLibrary(name = myLibraryName, session = mySession)
+#'  
+#' # Get the temporary file path
+#' myFilePath <- tempfilepath(myLibrary)
+#' }
 #' 
 #' @export
 setGeneric("tempfilepath", function(ssimObject) standardGeneric("tempfilepath"))

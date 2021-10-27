@@ -2,22 +2,53 @@
 % Please edit documentation in R/description.R
 \name{description}
 \alias{description}
+\alias{description<-}
 \alias{description,character-method}
 \alias{description,SsimObject-method}
-\title{Description of an SsimLibrary/Project/Scenario.}
+\alias{description<-,character-method}
+\alias{description<-,SsimObject-method}
+\title{Description of SsimLibrary, Project or Scenario}
 \usage{
 description(ssimObject)
+
+description(ssimObject) <- value
 
 \S4method{description}{character}(ssimObject)
 
 \S4method{description}{SsimObject}(ssimObject)
+
+\S4method{description}{character}(ssimObject) <- value
+
+\S4method{description}{SsimObject}(ssimObject) <- value
 }
 \arguments{
-\item{ssimObject}{SsimLibrary/Project/Scenario.}
+\item{ssimObject}{\code{\link{SsimLibrary}}, \code{\link{Project}} or 
+\code{\link{Scenario}} object}
+
+\item{value}{character string specifying the new description}
 }
 \value{
-A character string describing the ssimObject.
+A character string: the description of the SsimObject
 }
 \description{
-The description of an SsimLibrary/ProjectScenario.
+Get or set the description of a \code{\link{SsimLibrary}}, \code{\link{Project}} or 
+\code{\link{Scenario}}.
+}
+\examples{
+\donttest{
+# Specify file path and name of new SsimLibrary
+myLibraryName <- file.path(tempdir(), "testlib")
+
+# Set up a SyncroSim Session, SsimLibrary, and Project
+mySession <- session()
+myLibrary <- ssimLibrary(name = myLibraryName, session = mySession)
+myProject <- project(myLibrary, project = "Definitions")
+
+# Retrieve the description of the SyncroSim Project
+mydescription <- description(myProject)
+
+# Set the description of the SyncroSim Project
+description(myProject) <- "my description"
+}
+
 }

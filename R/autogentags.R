@@ -1,16 +1,27 @@
-# Copyright (c) 2019 Apex Resource Management Solution Ltd. (ApexRMS). All rights reserved.
-# GPL v.3 License
+# Copyright (c) 2021 Apex Resource Management Solution Ltd. (ApexRMS). All rights reserved.
+# MIT License
 #' @include AAAClassDefinitions.R
 NULL
 
-#' Auto Generation Tags for a Scenario.
+#' Auto Generation Tags for a Scenario
 #'
-#' Retrieves the Auto Generation Tags for a Scenario.
+#' Retrieves or sets the Auto Generation Tags for a \code{\link{Scenario}}.
 #'
-#' @param ssimObject Scenario.
+#' @param ssimObject \code{\link{Scenario}} object
+#' @param value character
 #' 
 #' @return 
 #' Returns the Auto Generation Tags.
+#' 
+#' @examples  
+#' \dontrun{
+#' # Get the Auto Generation Tags for a SyncroSim Scenario
+#' autogentags(myScenario)
+#' 
+#' # Set the Auto Generation Tags for a SyncroSim Scenario
+#' autogentags(myScenario) <- "myTag"
+#' }
+#' 
 #' @export
 setGeneric("autogentags", function(ssimObject) standardGeneric("autogentags"))
 
@@ -25,20 +36,11 @@ setMethod("autogentags", signature(ssimObject = "Scenario"), function(ssimObject
   return(scnInfo$autoGenTags)
 })
 
-#' Auto Generation Tags for a Scenario.
-#'
-#' Sets the Auto Generation Tags for a Scenario.
-#'
-#' @param ssimObject Scenario.
-#' @param value character.
-#' 
-#' @return 
-#' The updated ssimObject.
-#' 
+#' @rdname autogentags
 #' @export
 setGeneric("autogentags<-", function(ssimObject, value) standardGeneric("autogentags<-"))
 
-#' @rdname autogentags-set
+#' @rdname autogentags
 setReplaceMethod(
   f = "autogentags",
   signature = "character",
@@ -47,7 +49,7 @@ setReplaceMethod(
   }
 )
 
-#' @rdname autogentags-set
+#' @rdname autogentags
 setReplaceMethod(
   f = "autogentags",
   signature = "Scenario",

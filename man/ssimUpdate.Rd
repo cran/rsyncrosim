@@ -13,12 +13,37 @@ ssimUpdate(ssimObject)
 \S4method{ssimUpdate}{SsimObject}(ssimObject)
 }
 \arguments{
-\item{ssimObject}{SsimLibrary/Project/Scenario.}
+\item{ssimObject}{\code{\link{Session}}, \code{\link{Project}}, 
+or \code{\link{SsimLibrary}} object. If \code{NULL} (default), 
+\code{session()} will be used}
 }
 \value{
-This function invisibly returns `TRUE` upon success (i.e.successful 
-update) and `FALSE` upon failure.
+Invisibly returns \code{TRUE} upon success (i.e.successful 
+update) and \code{FALSE} upon failure.
 }
 \description{
-Apply updates to a SyncroSim Library, or a Project or Scenario associated with a Library.
+Apply updates to a \code{\link{SsimLibrary}}, or a \code{\link{Project}} or 
+\code{\link{Scenario}} associated with a SsimLibrary.
+}
+\examples{
+\donttest{
+# Set the file path and name of the new SsimLibrary
+myLibraryName <- file.path(tempdir(),"testlib")
+
+# Set the SyncroSim Session, SsimLibrary, and Project
+mySession <- session()
+myLibrary <- ssimLibrary(name = myLibraryName, session = mySession,
+                         overwrite=TRUE)
+myProject <- project(myLibrary, project = "My Project")
+
+# Update Project
+ssimUpdate(myProject)
+
+# Create Scenario
+myScenario <- scenario(myLibrary, scenario = "My Scenario")
+
+# Update scenario
+ssimUpdate(myScenario)
+}
+
 }

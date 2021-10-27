@@ -1,23 +1,40 @@
-# Copyright (c) 2019 Apex Resource Management Solution Ltd. (ApexRMS). All rights reserved.
-# GPL v.3 License
+# Copyright (c) 2021 Apex Resource Management Solution Ltd. (ApexRMS). All rights reserved.
+# MIT License
 #' @include AAAClassDefinitions.R
 NULL
 
-#' addon(s) of an SsimLibrary or Session
+#' Addon(s) installed in SsimLibrary or Session
 #'
-#' The addon(s) of an SsimLibrary or Session.
+#' Lists the addon SyncroSim package(s) associated with a 
+#' \code{\link{SsimLibrary}} or \code{\link{Session}}.
+#' These packages can only be used to extend existing SyncroSim base packages; 
+#' as a result they cannot be used to create new SsimLibraries.
+#' For example, \emph{stsimsf} is an addon for \emph{stsim} which provides optional 
+#' additional functionality for the base ST-Sim model.
+#' More information on addons can be found in the 
+#' \href{http://docs.syncrosim.com/how_to_guides/package_addon.html}{syncrosim documentation}.
 #' 
-#' @param ssimObject SsimLibrary/Project/Scenario or Session.
+#' @param ssimObject \code{\link{SsimLibrary}} or 
+#' \code{\link{Session}} object. If \code{NULL} (default), \code{session()} 
+#' will be used
 #' 
 #' @return 
-#' A dataframe of addons.
+#' A data.frame listing the addon(s) in use by the SsimLibrary or Session to 
+#' which the object belongs.
 #' 
 #' @examples
 #' \donttest{
-#' temp_dir <- tempdir()
-#' myses <- session()
-#' myLibrary <- ssimLibrary(name = file.path(temp_dir,"testlib"), session = myses)
+#' # Install the base package "stsim"
+#' addPackage("stsim")
 #' 
+#' # Set the file path and name of the new SsimLibrary
+#' myLibraryName <- file.path(tempdir(),"testlib")
+#' 
+#' # Set the SyncroSim Session and SsimLibrary
+#' mySession <- session()
+#' myLibrary <- ssimLibrary(name = myLibraryName, session = mySession)
+#' 
+#' # Retrieve a data.frame of available add-on(s) for the SsimLibrary
 #' addon(myLibrary)
 #' }
 #' 

@@ -4,7 +4,7 @@
 \alias{disableAddon}
 \alias{disableAddon,character-method}
 \alias{disableAddon,SsimLibrary-method}
-\title{Disable addon or addons.}
+\title{Disable addon package(s)}
 \usage{
 disableAddon(ssimLibrary, name)
 
@@ -13,27 +13,40 @@ disableAddon(ssimLibrary, name)
 \S4method{disableAddon}{SsimLibrary}(ssimLibrary, name)
 }
 \arguments{
-\item{ssimLibrary}{SsimLibrary.}
+\item{ssimLibrary}{\code{\link{SsimLibrary}} object}
 
-\item{name}{Character string or vector of addon names.}
+\item{name}{character string or vector of addon name(s)}
 }
 \value{
-This function invisibly returns `TRUE` upon success (i.e.successful deactivation of the addon) 
-and `FALSE` upon failure.
+This function invisibly returns \code{TRUE} upon success (i.e.successful deactivation
+of the addon) or \code{FALSE} upon failure.
 }
 \description{
-Disable addon or addons of an SsimLibrary, or Project/Scenario with an associated SsimLibrary.
+Disable \code{\link{addon}} package(s) of a \code{\link{SsimLibrary}}.
 }
 \examples{
 \donttest{
-temp_dir <- tempdir()
-myses <- session()
-myLibrary <- ssimLibrary(name = file.path(temp_dir,"testlib"), session = myses)
+# Install "stsim" SyncroSim package
+addPackage("stsim")
 
-enableAddon(myLibrary, c("stsimecodep"))
+# Specify file path and name of new SsimLibrary
+myLibraryName <- file.path(tempdir(), "testlib")
+
+# Set up a SyncroSim Session, SsimLibrary, and Project
+mySession <- session()
+myLibrary <- ssimLibrary(name = myLibraryName, session = mySession, 
+                         package = "stsim")
+
+# Enable addon package
+enableAddon(myLibrary, c("stsimsf"))
 addon(myLibrary)
-disableAddon(myLibrary, c("stsimecodep"))
+
+# Disable addon package
+disableAddon(myLibrary, c("stsimsf"))
 addon(myLibrary)
 }
 
+}
+\seealso{
+\code{\link{addon}}
 }

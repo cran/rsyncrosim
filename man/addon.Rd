@@ -6,7 +6,7 @@
 \alias{addon,missingOrNULL-method}
 \alias{addon,Session-method}
 \alias{addon,SsimObject-method}
-\title{addon(s) of an SsimLibrary or Session}
+\title{Addon(s) installed in SsimLibrary or Session}
 \usage{
 addon(ssimObject)
 
@@ -19,20 +19,37 @@ addon(ssimObject)
 \S4method{addon}{SsimObject}(ssimObject)
 }
 \arguments{
-\item{ssimObject}{SsimLibrary/Project/Scenario or Session.}
+\item{ssimObject}{\code{\link{SsimLibrary}} or 
+\code{\link{Session}} object. If \code{NULL} (default), \code{session()} 
+will be used}
 }
 \value{
-A dataframe of addons.
+A data.frame listing the addon(s) in use by the SsimLibrary or Session to 
+which the object belongs.
 }
 \description{
-The addon(s) of an SsimLibrary or Session.
+Lists the addon SyncroSim package(s) associated with a 
+\code{\link{SsimLibrary}} or \code{\link{Session}}.
+These packages can only be used to extend existing SyncroSim base packages; 
+as a result they cannot be used to create new SsimLibraries.
+For example, \emph{stsimsf} is an addon for \emph{stsim} which provides optional 
+additional functionality for the base ST-Sim model.
+More information on addons can be found in the 
+\href{http://docs.syncrosim.com/how_to_guides/package_addon.html}{syncrosim documentation}.
 }
 \examples{
 \donttest{
-temp_dir <- tempdir()
-myses <- session()
-myLibrary <- ssimLibrary(name = file.path(temp_dir,"testlib"), session = myses)
+# Install the base package "stsim"
+addPackage("stsim")
 
+# Set the file path and name of the new SsimLibrary
+myLibraryName <- file.path(tempdir(),"testlib")
+
+# Set the SyncroSim Session and SsimLibrary
+mySession <- session()
+myLibrary <- ssimLibrary(name = myLibraryName, session = mySession)
+
+# Retrieve a data.frame of available add-on(s) for the SsimLibrary
 addon(myLibrary)
 }
 

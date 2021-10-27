@@ -1,30 +1,44 @@
-# Copyright (c) 2019 Apex Resource Management Solution Ltd. (ApexRMS). All rights reserved.
-# GPL v.3 License
+# Copyright (c) 2021 Apex Resource Management Solution Ltd. (ApexRMS). All rights reserved.
+# MIT License
 #' @include AAAClassDefinitions.R
 NULL
 
-#' The owner of a SsimLibrary/Project/Scenario.
+#' Owner of a SsimLibrary, Project or Scenario
 #'
-#' Retrieves the owner of a SsimLibrary/ProjectScenario.
+#' Retrieves or sets the owner of a \code{\link{SsimLibrary}},
+#' \code{\link{Project}} or \code{\link{Scenario}}.
 #'
-#' @param ssimObject SsimLibrary/Project/Scenario.
+#' @param ssimObject \code{\link{Session}}, \code{\link{Project}}, 
+#' or \code{\link{SsimLibrary}} object
+#' @param value character string of the new owner
 #' 
 #' @return 
-#' A character string: the owner of the ssimObject. 
+#' A character string: the owner of the SsimObject. 
+#' 
+#' @examples 
+#' \dontrun{
+#' # Specify file path and name of new SsimLibrary
+#' myLibraryName <- file.path(tempdir(), "testlib")
+#' 
+#' # Set up a SyncroSim Session, SsimLibrary, Project, and Scenario
+#' mySession <- session()
+#' myLibrary <- ssimLibrary(name = myLibraryName, session = mySession)
+#' myProject <- project(myLibrary, project = "Definitions")
+#' myScenario <- scenario(myProject, scenario = "My Scenario")
+#' 
+#' # Retrieve the owner of an SsimObject
+#' owner(myLibrary)
+#' owner(myProject)
+#' owner(myScenario)
+#' 
+#' # Set the owner of a SyncroSim Scenario
+#' owner(myScenario) <- "Apex RMS"
+#' }
 #' 
 #' @export
 setGeneric("owner", function(ssimObject) standardGeneric("owner"))
 
-#' Set the owner of an SsimLibrary/Project/Scenario.
-#'
-#' Set the owner of an SsimLibrary/Project/Scenario.
-#'
-#' @param ssimObject Scenario/Project/SsimLibrary.
-#' @param value The new owner.
-#' 
-#' @return 
-#' The updated ssimObject.
-#' 
+#' @rdname owner
 #' @export
 setGeneric("owner<-", function(ssimObject, value) standardGeneric("owner<-"))
 
@@ -52,7 +66,7 @@ setMethod("owner", signature(ssimObject = "Scenario"), function(ssimObject) {
   return(scnInfo$owner)
 })
 
-#' @rdname owner-set
+#' @rdname owner
 setReplaceMethod(
   f = "owner",
   signature = "character",
@@ -61,7 +75,7 @@ setReplaceMethod(
   }
 )
 
-#' @rdname owner-set
+#' @rdname owner
 setReplaceMethod(
   f = "owner",
   signature = "SsimObject",

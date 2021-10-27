@@ -3,18 +3,36 @@
 \name{info}
 \alias{info}
 \alias{info,SsimLibrary-method}
-\title{Information about an library}
+\title{Retrieves information about a library}
 \usage{
 info(ssimLibrary)
 
 \S4method{info}{SsimLibrary}(ssimLibrary)
 }
 \arguments{
-\item{ssimLibrary}{A \code{SsimLibrary} object.}
+\item{ssimLibrary}{\code{\link{SsimLibrary}} object}
 }
 \value{
-Returns a \code{data.frame} with information on the properties of the library object.
+Returns a \code{data.frame} with information on the properties of the SsimLibrary 
+object.
 }
 \description{
-Get basic information about a Library.
+Retrieves some basic metadata about a SsimLibrary: Name, Owner, Last Modified, 
+Size, Read Only, Package Name, Package Description, Current Package Version,
+Minimum Package Version, External input files, External output files, 
+Temporary files, Backup files.
+}
+\examples{
+\dontrun{
+# Specify file path and name of new SsimLibrary
+myLibraryName <- file.path(tempdir(), "testlib")
+
+# Set up a SyncroSim Session and SsimLibrary
+mySession <- session()
+myLibrary <- ssimLibrary(name = myLibraryName, session = mySession)
+
+# Get information about SsimLibrary  
+info(myLibrary)
+}
+
 }

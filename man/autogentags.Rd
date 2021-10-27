@@ -4,20 +4,42 @@
 \alias{autogentags}
 \alias{autogentags,character-method}
 \alias{autogentags,Scenario-method}
-\title{Auto Generation Tags for a Scenario.}
+\alias{autogentags<-}
+\alias{autogentags<-,character-method}
+\alias{autogentags<-,Scenario-method}
+\title{Auto Generation Tags for a Scenario}
 \usage{
 autogentags(ssimObject)
 
 \S4method{autogentags}{character}(ssimObject)
 
 \S4method{autogentags}{Scenario}(ssimObject)
+
+autogentags(ssimObject) <- value
+
+\S4method{autogentags}{character}(ssimObject) <- value
+
+\S4method{autogentags}{Scenario}(ssimObject) <- value
 }
 \arguments{
-\item{ssimObject}{Scenario.}
+\item{ssimObject}{\code{\link{Scenario}} object}
+
+\item{value}{character}
 }
 \value{
 Returns the Auto Generation Tags.
 }
 \description{
-Retrieves the Auto Generation Tags for a Scenario.
+Retrieves or sets the Auto Generation Tags for a \code{\link{Scenario}}.
+}
+\examples{
+ 
+\dontrun{
+# Get the Auto Generation Tags for a SyncroSim Scenario
+autogentags(myScenario)
+
+# Set the Auto Generation Tags for a SyncroSim Scenario
+autogentags(myScenario) <- "myTag"
+}
+
 }

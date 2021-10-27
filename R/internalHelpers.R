@@ -1,5 +1,5 @@
-# Copyright (c) 2019 Apex Resource Management Solution Ltd. (ApexRMS). All rights reserved.
-# GPL v.3 License
+# Copyright (c) 2021 Apex Resource Management Solution Ltd. (ApexRMS). All rights reserved.
+# MIT License
 #' @include AAAClassDefinitions.R
 NULL
 
@@ -267,12 +267,13 @@ printAndCapture <- function(x) {
 # @param scenario Scenario name or id. Ignored if x is a Scenario.
 # @param scope "scenario","project", "library", "all", or NULL.
 # @param refresh If FALSE (default) names are retrieved from x@datasheetNames. If TRUE names are retrieved using a console call (slower).
+# @param core if FALSE (default) names are retrieved from x@datasheetNames. If TRUE names are retrieved using a console call and include core datasheets.
 # @return A dataframe of datasheet names.
 # @examples
 #
 # Note: this function is now internal. Should now only be called from datasheet.
 
-datasheets <- function(x, project = NULL, scenario = NULL, scope = NULL, refresh = FALSE) {
+datasheets <- function(x, project = NULL, scenario = NULL, scope = NULL, refresh = FALSE, core = FALSE) {
   if (!is(x, "SsimObject")) {
     stop("expecting SsimObject.")
   }
@@ -280,13 +281,17 @@ datasheets <- function(x, project = NULL, scenario = NULL, scope = NULL, refresh
   x <- .getFromXProjScn(x, project, scenario)
   
   # Get datasheet dataframe
-  if (!refresh) {
+  if (!refresh & !core) {
     datasheets <- x@datasheetNames
-  } else {
+  } else if (!core) {
     tt <- command(c("list", "datasheets", "csv", paste0("lib=", .filepath(x))), .session(x))
     datasheets <- .dataframeFromSSim(tt, convertToLogical = c("isOutput", "isSingle"))
     datasheets$scope <- sapply(datasheets$scope, camel)
     # TO DO - export this info from SyncroSim
+  } else {
+    tt <- command(c("list", "datasheets", "csv", "includesys", paste0("lib=", .filepath(x))), .session(x))
+    datasheets <- .dataframeFromSSim(tt, convertToLogical = c("isOutput", "isSingle"))
+    datasheets$scope <- sapply(datasheets$scope, camel)
   }
   datasheets$order <- seq(1, nrow(datasheets))
   if (!is.null(scope) && (scope == "all")) {

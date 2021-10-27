@@ -1,18 +1,18 @@
-# Copyright (c) 2019 Apex Resource Management Solution Ltd. (ApexRMS). All rights reserved.
-# GPL v.3 License
+# Copyright (c) 2021 Apex Resource Management Solution Ltd. (ApexRMS). All rights reserved.
+# MIT License
 
 old_dir <- getwd()
 temp_dir <- tempdir()
 dir.create(temp_dir)
 setwd(temp_dir)
-myses <- session()
+mySession <- session()
 
 test_that("Test simple non-spatial STSim example - assumes that SyncroSim is installed.", {
   skip_on_cran()
 
   # Create the project definition
   libPath <- paste0(getwd(), "/ST-Sim-Command-Line.ssim")
-  myLibrary <- ssimLibrary(session = myses, name = libPath, overwrite = TRUE)
+  myLibrary <- ssimLibrary(session = mySession, name = libPath, overwrite = TRUE)
   myProject <- project(myLibrary, project = "ST-Sim Demonstration")
 
   #***********************************

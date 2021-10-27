@@ -1,16 +1,32 @@
-# Copyright (c) 2019 Apex Resource Management Solution Ltd. (ApexRMS). All rights reserved.
-# GPL v.3 License
+# Copyright (c) 2021 Apex Resource Management Solution Ltd. (ApexRMS). All rights reserved.
+# MIT License
 #' @include AAAClassDefinitions.R
 NULL
 
-#' Check if a Session is silent
+#' Silent status of SyncroSim Session
 #'
-#' Checks whether a SyncroSim Session is silent or not.
+#' Checks or sets whether a SyncroSim \code{\link{Session}} is silent or not. In
+#' a silent session, warnings from the console are ignored.
 #'
-#' @param session Session or character. A SyncroSim \code{\link{Session}} object or path to a session. If NULL, the default session will be used.
+#' @param session \code{\link{Session}} object or character (i.e. filepath to a 
+#' session). If \code{NULL}, \code{session()} will be used
+#' @param value logical. If \code{TRUE} (default), the SyncroSim Session will be 
+#' silent
 #' 
 #' @return 
-#' Returns a logical value: `TRUE` if the session is silent and `FALSE` otherwise.
+#' A logical: \code{TRUE} if the session is silent and \code{FALSE} otherwise.
+#' 
+#' @examples 
+#' \donttest{
+#' # Set up a SyncroSim Session
+#' mySession <- session()
+#' 
+#' # Check the silent status of a SyncroSim Session
+#' silent(mySession)
+#' 
+#' # Set the silent status of a SyncroSim Session
+#' silent(mySession) <- FALSE
+#' }
 #' 
 #' @export
 setGeneric("silent", function(session) standardGeneric("silent"))
@@ -31,19 +47,10 @@ setMethod("silent", signature(session = "missingOrNULLOrChar"), function(session
   return(silent(session))
 })
 
-#' Set silent property of a Session
-#'
-#' Set silent property of a session to TRUE or FALSE
-#'
-#' @param session Session.
-#' @param value Logical.
-#' 
-#' @return 
-#' The updated ssimObject.
-#' 
+#' @rdname silent
 #' @export
 setGeneric("silent<-", function(session, value) standardGeneric("silent<-"))
-#' @rdname silent-set
+#' @rdname silent
 setReplaceMethod(
   f = "silent",
   signature = "character",
@@ -52,7 +59,7 @@ setReplaceMethod(
   }
 )
 
-#' @rdname silent-set
+#' @rdname silent
 setReplaceMethod(
   f = "silent",
   signature = "Session",

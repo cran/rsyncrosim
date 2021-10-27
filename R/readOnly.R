@@ -1,17 +1,41 @@
-# Copyright (c) 2019 Apex Resource Management Solution Ltd. (ApexRMS). All rights reserved.
-# GPL v.3 License
+# Copyright (c) 2021 Apex Resource Management Solution Ltd. (ApexRMS). All rights reserved.
+# MIT License
 #' @include AAAClassDefinitions.R
 NULL
 
-#' Read-only status of a SsimLibrary/Project/Scenario.
+#' Read-only status of a SsimLibrary, Project or Scenario
 #'
-#' Whether or not a SsimLibrary/ProjectScenario is read-only.
+#' Retrieves or sets whether or not a \code{\link{SsimLibrary}}, 
+#' \code{\link{Project}} or \code{\link{Scenario}} is read-only.
 #'
-#' @param ssimObject SsimLibrary/Project/Scenario.
+#' @param ssimObject \code{\link{Scenario}}, 
+#' \code{\link{Project}}, or \code{\link{SsimLibrary}} object
+#' @param value logical. If \code{TRUE} the SsimObject will be read-only. Default is 
+#' \code{FALSE}
 #' 
 #' @return 
-#' Returns a logical value: `TRUE` if the ssimObject is read only and `FALSE`
+#' A logical: \code{TRUE} if the SsimObject is read-only and \code{FALSE}
 #' otherwise.
+#' 
+#' @examples 
+#' \donttest{
+#' # Specify file path and name of new SsimLibrary
+#' myLibraryName <- file.path(tempdir(), "testlib")
+#' 
+#' # Set up a SyncroSim Session, SsimLibrary, Project, and Scenario
+#' mySession <- session()
+#' myLibrary <- ssimLibrary(name = myLibraryName, session = mySession)
+#' myProject <- project(myLibrary, project = "Definitions")
+#' myScenario <- scenario(myProject, scenario = "My Scenario")
+#' 
+#' # Retrieve the read-only status of a SsimObject
+#' readOnly(myLibrary)
+#' readOnly(myProject)
+#' readOnly(myScenario)
+#' 
+#' # Set the read-only status of a SsimObject
+#' readOnly(myScenario) <- TRUE
+#' }
 #' 
 #' @export
 setGeneric("readOnly", function(ssimObject) standardGeneric("readOnly"))
@@ -48,22 +72,11 @@ setMethod("readOnly", signature(ssimObject = "Scenario"), function(ssimObject) {
   return(scnInfo$readOnly)
 })
 
-#' Set the read/write status of a SsimLibrary/Project/Scenario.
-#'
-#' Set the read-only status of a SsimLibrary/Project/Scenario.
-#' Applies to child objects if ssimObject is a SsimLibrary or Project.
-#'
-#' @param ssimObject Scenario/Project/SsimLibrary.
-#' 
-#' @param value Logical. If T the ssimObject will be read-only.
-#' 
-#' @return 
-#' The updated ssimObject.
-#' 
+#' @rdname readOnly
 #' @export
 setGeneric("readOnly<-", function(ssimObject, value) standardGeneric("readOnly<-"))
 
-#' @rdname readOnly-set
+#' @rdname readOnly
 setReplaceMethod(
   f = "readOnly",
   signature = "character",
@@ -72,7 +85,7 @@ setReplaceMethod(
   }
 )
 
-#' @rdname readOnly-set
+#' @rdname readOnly
 setReplaceMethod(
   f = "readOnly",
   signature = "SsimObject",

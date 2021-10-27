@@ -2,28 +2,67 @@
 % Please edit documentation in R/package.R
 \name{package}
 \alias{package}
-\alias{package,missingOrNULL-method}
 \alias{package,character-method}
+\alias{package,missingOrNULL-method}
 \alias{package,Session-method}
+\alias{package,SsimLibrary-method}
 \title{Installed or available packages}
 \usage{
-package(session, installed = TRUE)
+package(ssimObject = NULL, installed = TRUE, listTemplates = NULL)
 
-\S4method{package}{missingOrNULL}(session, installed = TRUE)
+\S4method{package}{character}(ssimObject = NULL, installed = TRUE, listTemplates = NULL)
 
-\S4method{package}{character}(session, installed = TRUE)
+\S4method{package}{missingOrNULL}(ssimObject = NULL, installed = TRUE, listTemplates = NULL)
 
-\S4method{package}{Session}(session, installed = TRUE)
+\S4method{package}{Session}(ssimObject = NULL, installed = TRUE, listTemplates = NULL)
+
+\S4method{package}{SsimLibrary}(ssimObject)
 }
 \arguments{
-\item{session}{Session.}
+\item{ssimObject}{\code{\link{Session}} or 
+\code{\link{SsimLibrary}} object. If \code{NULL} (default), \code{session()}
+will be used}
 
-\item{installed}{Logical. `TRUE` to list installed packages and `FALSE` to list 
-available packages.}
+\item{installed}{logical or character. \code{TRUE} (default) to list installed packages, 
+\code{FALSE} to list available packages, and "BASE" to list installed base 
+packages}
+
+\item{listTemplates}{character. Name of a SyncroSim package. If not \code{NULL} 
+(default), then lists all templates available for that package. The package
+must be installed in the current Session. Ignored if ssimObject is a 
+\code{\link{SsimLibrary}} object}
 }
 \value{
-Returns a \code{data.frame} of packages installed.
+Returns a \code{data.frame} of packages installed or templates available 
+for a specified package.
 }
 \description{
-Packages installed or available for this version of SyncroSim.
+Retrieves the packages installed or available for this version of SyncroSim.
+}
+\examples{
+\donttest{
+# Set the file path and name of the new SsimLibrary
+myLibraryName <- file.path(tempdir(),"testlib")
+
+# Set the SyncroSim Session and SsimLibrary
+mySession <- session()
+myLibrary <- ssimLibrary(name = myLibraryName, session = mySession)
+
+# List all installed packages
+package(mySession)
+
+# List all the installed base packages
+package(installed = "BASE")
+
+# List all available packages on the server (including currently installed)
+package(installed = FALSE)
+ 
+# Check the package you're SsimLibrary is currently using
+package(myLibrary)
+
+# Check the templates available for an installed package
+addPackage("helloworldSpatial")
+package(listTemplates = "helloworldSpatial")
+}
+
 }

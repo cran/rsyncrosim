@@ -1,16 +1,37 @@
-# Copyright (c) 2019 Apex Resource Management Solution Ltd. (ApexRMS). All rights reserved.
-# GPL v.3 License
+# Copyright (c) 2021 Apex Resource Management Solution Ltd. (ApexRMS). All rights reserved.
+# MIT License
 #' @include AAAClassDefinitions.R
 NULL
 
-#' Ignore Dependencies for a Scenario.
+#' Ignore dependencies for a Scenario
 #'
-#' Retrieves the Ignore Dependencies Datafeeds for a Scenario.
+#' Retrieves or sets the Datafeeds to ignore for a \code{\link{Scenario}}.
 #'
-#' @param ssimObject Scenario.
+#' @param ssimObject \code{\link{Scenario}} object
+#' @param value character string of Datafeed names to be ignored, separated by
+#' commas (optional)
 #' 
 #' @return 
-#' Returns Ignore Dependencies Datafeeds.
+#' A character string: Scenario Datafeeds that will be ignored.
+#' 
+#' @examples
+#' \donttest{
+#' # Specify file path and name of new SsimLibrary
+#' myLibraryName <- file.path(tempdir(), "testlib")
+#' 
+#' # Set up a SyncroSim Session, SsimLibrary, Project, and Scenario
+#' mySession <- session()
+#' myLibrary <- ssimLibrary(name = myLibraryName, session = mySession)
+#' myProject <- project(myLibrary, project = "Definitions")
+#' myScenario <- scenario(myProject, scenario = "My Scenario")
+#' 
+#' # List the Datafeeds to ignore
+#' ignoreDependencies(myScenario)
+#' 
+#' # Set Scenario Datafeeds to ignore
+#' ignoreDependencies(myScenario) <- "stsim_RunControl,stsim_TransitionTarget"
+#' }
+#' 
 #' @export
 setGeneric("ignoreDependencies", function(ssimObject) standardGeneric("ignoreDependencies"))
 
@@ -25,20 +46,11 @@ setMethod("ignoreDependencies", signature(ssimObject = "Scenario"), function(ssi
   return(scnInfo$ignoreDependencies)
 })
 
-#' Ignore Dependencies Datafeeds for a Scenario.
-#'
-#' Sets the Ignore Dependencies Datafeed for a Scenario.
-#'
-#' @param ssimObject Scenario.
-#' @param value Character.
-#' 
-#' @return 
-#' Returns the updated ssimObject.
-#' 
+#' @rdname ignoreDependencies
 #' @export
 setGeneric("ignoreDependencies<-", function(ssimObject, value) standardGeneric("ignoreDependencies<-"))
 
-#' @rdname ignoreDependencies-set
+#' @rdname ignoreDependencies
 setReplaceMethod(
   f = "ignoreDependencies",
   signature = "character",
@@ -47,7 +59,7 @@ setReplaceMethod(
   }
 )
 
-#' @rdname ignoreDependencies-set
+#' @rdname ignoreDependencies
 setReplaceMethod(
   f = "ignoreDependencies",
   signature = "Scenario",

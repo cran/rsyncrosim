@@ -4,7 +4,7 @@
 \alias{runLog}
 \alias{runLog,character-method}
 \alias{runLog,Scenario-method}
-\title{The run log of a result Scenario}
+\title{Retrieves run log of result Scenario}
 \usage{
 runLog(scenario)
 
@@ -13,11 +13,36 @@ runLog(scenario)
 \S4method{runLog}{Scenario}(scenario)
 }
 \arguments{
-\item{scenario}{A Scenario object.}
+\item{scenario}{\code{\link{Scenario}} object.}
 }
 \value{
-Returns a character string: the run log for a result scenario.
+A character string: the run log for a result scenario.
 }
 \description{
-The run log of a result Scenario.
+Retrieves the run log of a result Scenario.
+}
+\examples{
+\dontrun{
+# Install helloworldSpatial package
+addPackage("helloworldSpatial")
+
+# Set the file path and name of the new SsimLibrary
+myLibraryName <- file.path(tempdir(),"testlib")
+
+# Set the SyncroSim Session, SsimLibrary, Project, and Scenario
+mySession <- session()
+myLibrary <- ssimLibrary(name = myLibraryName,
+                         session = mySession, 
+                         package = "helloworldSpatial",
+                         template = "example-library")
+myProject <- project(myLibrary, project = "Definitions")
+myScenario <- scenario(myProject, scenario = "My Scenario")
+
+# Run Scenario
+resultScenario <- run(myScenario)
+
+# Retrieve the run log of the result Scenario
+runLog(resultScenario)
+}
+
 }
