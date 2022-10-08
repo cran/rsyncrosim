@@ -45,9 +45,9 @@ setMethod("mergeDependencies", signature(ssimObject = "character"), function(ssi
 #' @rdname mergeDependencies
 setMethod("mergeDependencies", signature(ssimObject = "Scenario"), function(ssimObject) {
   scnInfo <- scenario(ssimObject, summary = TRUE)
-  if (scnInfo$mergeDependencies == "Yes"){
+  if (scnInfo$MergeDependencies == "Yes"){
     value <- TRUE
-  } else if (scnInfo$mergeDependencies == "No"){
+  } else if (scnInfo$MergeDependencies == "No"){
     value <- FALSE
   }
   return(value)
@@ -71,7 +71,7 @@ setReplaceMethod(
   f = "mergeDependencies",
   signature = "Scenario",
   definition = function(ssimObject, value) {
-    if (class(value) != "logical") {
+    if (!is(value, "logical")) {
       stop("mergeDependencies must be TRUE or FALSE.")
     }
     if (value == TRUE) {

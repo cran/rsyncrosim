@@ -3,6 +3,7 @@
 
 setClassUnion("missingOrNULL", c("missing", "NULL"))
 setClassUnion("missingOrNULLOrChar", c("missing", "NULL", "character"))
+setClassUnion("NULLOrChar", c("NULL", "character"))
 
 # NOTE: Constructors for each class are defined in the R file bearing the name of the
 # class (lower case). e.g. session.R, ssimLibrary.R, etc.
@@ -19,10 +20,11 @@ setClassUnion("missingOrNULLOrChar", c("missing", "NULL", "character"))
 #'     printed. Helpful for debugging. Default is \code{TRUE}
 #' @slot printCmd If \code{TRUE}, arguments passed to the SyncroSim console are also 
 #'     printed. Helpful for debugging. Default is \code{FALSE}
+#' @slot condaFilepath The path to the Conda installation. Default is \code{"default"}
 #' @name Session-class
 #' @rdname Session-class
 #' @export Session
-Session <- setClass("Session", representation(filepath = "character", silent = "logical", printCmd = "logical"))
+Session <- setClass("Session", representation(filepath = "character", silent = "logical", printCmd = "logical", condaFilepath = "NULLOrChar"))
 
 # SyncroSim Object class (nor exported)
 # SsimLibrary, Project and Scenario all inherit from this abstract class.

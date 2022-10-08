@@ -3,28 +3,51 @@
 #' @include AAAClassDefinitions.R
 NULL
 
+# @importFrom utils packageVersion
 # @name Session
 # @rdname Session-class
-setMethod(f = "initialize", signature = "Session", definition = function(.Object, path, silent = FALSE, printCmd = FALSE) {
+setMethod(f = "initialize", signature = "Session", definition = function(.Object, path, silent = FALSE, printCmd = FALSE, condaFilepath = NULL) {
+  
   .Object@filepath <- gsub("\\", "/", gsub("/SyncroSim.Console.exe", "", path, fixed = TRUE), fixed = TRUE)
   .Object@silent <- silent
   .Object@printCmd <- printCmd
+  .Object@condaFilepath <- condaFilepath
 
-  vs <- command(list(version = NULL), .Object)
-
-  if (!grepl("Version is:", vs)) {
+  ssimRequiredVersion <- "2.3.24"
+  ssimCurrentVersion <- command(list(version = NULL), .Object)
+  rsyncrosimVersion <- packageVersion("rsyncrosim")
+  
+  if (!grepl("Version is:", ssimCurrentVersion)) {
     stop("Cannot retrieve SyncroSim version.  At least SyncroSim version 2.1.0 is required.")
   }
-
-  vs <- gsub("Version is: ", "", vs, fixed = TRUE)
-  vs <- as.numeric(strsplit(vs, ".", fixed = TRUE)[[1]])
-
-  if (vs[1] < 2) {
-    stop("rsyncrosim requires at least SyncroSim version 2.1.0.")
+  
+  ssimCurrentVersion <- gsub("Version is: ", "", ssimCurrentVersion, fixed = TRUE)
+  ssimCurrentVersionBits <- as.numeric(strsplit(ssimCurrentVersion, ".", fixed = TRUE)[[1]])
+  ssimRequiredVersionBits <- as.numeric(strsplit(ssimRequiredVersion, ".", fixed = TRUE)[[1]])
+  
+  loadVersion <- FALSE
+  if (ssimCurrentVersionBits[1] >= ssimRequiredVersionBits[1]){
+    if (ssimCurrentVersionBits[1] > ssimRequiredVersion[1]) {
+      loadVersion <- TRUE
+    } else {
+      if (ssimCurrentVersionBits[2] >= ssimRequiredVersionBits[2]){
+        if (ssimCurrentVersionBits[2] > ssimRequiredVersionBits[2]) {
+          loadVersion <- TRUE
+        } else {
+          if (ssimCurrentVersionBits[3] >= ssimRequiredVersionBits[3]){
+            if (ssimCurrentVersionBits[3] > ssimRequiredVersionBits[3]){
+              loadVersion <- TRUE
+            } 
+          }
+        }
+      } 
+    }
   }
-
-  if (vs[2] < 1) {
-    stop("rsyncrosim requires at least SyncroSim version 2.1.0.")
+  
+  if (!loadVersion) {
+    stop(paste0("SyncroSim v", ssimRequiredVersion,
+                " is required to run rsyncrosim v", rsyncrosimVersion,
+                " but you have SyncroSim v", ssimCurrentVersion, " installed."))
   }
   return(.Object)
 })
@@ -40,6 +63,10 @@ setMethod(f = "initialize", signature = "Session", definition = function(.Object
 #' @param printCmd logical. Applies only if x is a path or \code{NULL} If \code{TRUE}, 
 #'     arguments passed to the SyncroSim console are also printed. Helpful for 
 #'     debugging. Default is \code{FALSE}
+#' @param condaFilepath string. Gets or sets the path to the
+#'     Conda installation folder. Can be used to direct SyncroSim to a custom
+#'     Conda installation. If \code{"default"} (default), then default Conda 
+#'     installation folder is used
 #' @param ssimObject \code{\link{Project}} or \code{\link{Scenario}} object
 #' @param value \code{\link{Session}} object
 #' 
@@ -83,12 +110,12 @@ setMethod(f = "initialize", signature = "Session", definition = function(.Object
 #' }
 #' 
 #' @export
-setGeneric("session", function(x = NULL, silent = TRUE, printCmd = FALSE) standardGeneric("session"))
+setGeneric("session", function(x = NULL, silent = TRUE, printCmd = FALSE, condaFilepath = NULL) standardGeneric("session"))
 
 #' @rdname session
-setMethod("session", signature(x = "missingOrNULLOrChar"), function(x, silent, printCmd) {
+setMethod("session", signature(x = "missingOrNULLOrChar"), function(x, silent, printCmd, condaFilepath) {
   path <- x
-
+  
   if (!is.null(path)) {
     if (!grepl("SyncroSim.Console.exe", path, fixed = TRUE)) {
       path <- paste0(path, "/SyncroSim.Console.exe")
@@ -137,12 +164,27 @@ setMethod("session", signature(x = "missingOrNULLOrChar"), function(x, silent, p
     warning("Default SyncroSim installation not found. Either install SyncroSim in the default location, or explicitly set the session path. See ?session for details.")
     return(SyncroSimNotFound(warn = FALSE))
   }
+  
+  if (endsWith(path, "/SyncroSim.Console.exe")) {
+    progName <- dirname(path)
+  } else {
+    progName <- path
+  }
+  if (is.null(condaFilepath)) {
+    tt <- command(args = list(conda = NULL, clear = NULL), progName = progName)
+  } else {
+    tt <- command(args = list(conda = NULL, path = condaFilepath), progName = progName)
+    if (startsWith(tt[1], "The folder does not contain a valid Conda executable")) {
+      message(tt[1])
+      condaFilepath <- "default"
+    }
+  }
 
-  return(new("Session", path, silent, printCmd))
+  return(new("Session", path, silent, printCmd, condaFilepath))
 })
 
 #' @rdname session
-setMethod("session", signature(x = "SsimObject"), function(x, silent, printCmd) x@session)
+setMethod("session", signature(x = "SsimObject"), function(x, silent, printCmd, condaFilepath) x@session)
 
 #' @rdname session
 #' @export
@@ -151,7 +193,7 @@ setGeneric("session<-", function(ssimObject, value) standardGeneric("session<-")
 #' @rdname session
 setReplaceMethod(
   f = "session",
-  signature = "character",
+  signature = "NULLOrChar",
   definition = function(ssimObject, value) {
     return(ssimObject)
   }
@@ -162,7 +204,7 @@ setReplaceMethod(
   f = "session",
   signature = "SsimObject",
   definition = function(ssimObject, value) {
-    if (class(value) != "Session") {
+    if (!is(value, "Session")) {
       stop("Must assign a Session object.")
     }
     if (.filepath(value) != .filepath(.session(ssimObject))) {

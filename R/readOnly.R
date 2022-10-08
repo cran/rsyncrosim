@@ -63,13 +63,23 @@ setMethod("readOnly", signature(ssimObject = "SsimLibrary"), function(ssimObject
 #' @rdname readOnly
 setMethod("readOnly", signature(ssimObject = "Project"), function(ssimObject) {
   scnInfo <- project(ssimObject, summary = TRUE)
-  return(scnInfo$readOnly)
+  readOnlyStatus <- scnInfo$IsReadOnly
+  if (readOnlyStatus == "No") {
+    return(FALSE)
+  } else {
+    return(TRUE)
+  }
 })
 
 #' @rdname readOnly
 setMethod("readOnly", signature(ssimObject = "Scenario"), function(ssimObject) {
   scnInfo <- scenario(ssimObject, summary = TRUE)
-  return(scnInfo$readOnly)
+  readOnlyStatus <- scnInfo$IsReadOnly
+  if (readOnlyStatus == "No") {
+    return(FALSE)
+  } else {
+    return(TRUE)
+  }
 })
 
 #' @rdname readOnly
@@ -90,7 +100,7 @@ setReplaceMethod(
   f = "readOnly",
   signature = "SsimObject",
   definition = function(ssimObject, value) {
-    if (class(value) != "logical") {
+    if (!is(value, "logical")) {
       stop("readOnly must be TRUE or FALSE.")
     }
     if (value == TRUE) {
@@ -99,10 +109,10 @@ setReplaceMethod(
       readOnly <- "no"
     }
     args <- list(setprop = NULL, lib = .filepath(ssimObject), readonly = readOnly)
-    if (class(ssimObject) == "Project") {
+    if (is(ssimObject, "Project")) {
       args$pid <- .projectId(ssimObject)
     }
-    if (class(ssimObject) == "Scenario") {
+    if (is(ssimObject, "Scenario")) {
       args$sid <- .scenarioId(ssimObject)
     }
     tt <- command(args, .session(ssimObject))

@@ -66,6 +66,8 @@ setMethod("delete", signature(ssimObject = "character"), function(ssimObject, pr
 
 #' @rdname delete
 setMethod("delete", signature(ssimObject = "SsimObject"), function(ssimObject, project, scenario, datasheet, force) {
+  ScenarioID <- NULL
+  
   xProjScn <- .getFromXProjScn(ssimObject, project = project, scenario = scenario, returnIds = TRUE, convertObject = FALSE, complainIfMissing = TRUE)
   
   # expect to have a vector of valid project or scenario ids - checking already done
@@ -177,10 +179,10 @@ setMethod("delete", signature(ssimObject = "SsimObject"), function(ssimObject, p
     out <- list()
     for (i in seq(length.out = length(scenario))) {
       cScn <- scenario[i]
-      name <- allScenarios$name[allScenarios$scenarioId == cScn]
+      name <- allScenarios$Name[allScenarios$ScenarioID == cScn]
       
       if (!is.null(datasheet)) {
-        cProj <- subset(scenarioSet, scenarioId == cScn)$projectId
+        cProj <- subset(scenarioSet, ScenarioID == cScn)$ProjectID
         outBit <- deleteDatasheet(x, datasheet = datasheet, datasheets = datasheets, 
                                   cProj = cProj, cScn = cScn, cProjName = "", 
                                   cScnName = name, out = out, force = force)

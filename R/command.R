@@ -26,6 +26,8 @@ NULL
 #'     "SyncroSim.PackageManager.exe" and "SyncroSim.Multiband.exe"
 #' @param wait logical. If \code{TRUE}(default) R will wait for the command to finish 
 #'     before proceeding. Note that silent(session) is ignored if \code{wait=FALSE}
+#' @param progName character. Internal argument for setting path to SyncroSim 
+#'     installation folder.
 #' 
 #' @return 
 #' Character string: output from the SyncroSim program.
@@ -60,21 +62,21 @@ NULL
 #' command(list(installed = NULL), program = "SyncroSim.PackageManager.exe")
 #' }
 #' @export
-command <- function(args, session = NULL, program = "SyncroSim.Console.exe", wait = TRUE) {
+command <- function(args, session = NULL, program = "SyncroSim.Console.exe", wait = TRUE, progName = NULL) {
 
   # if a SyncroSim session is not provided, make one
-  if (is.null(session)) {
+  if (is.null(session) && is.null(progName)) {
     session <- .session()
   }
-  if ((class(session) == "character") && (session == SyncroSimNotFound(warn = FALSE))) {
+  if (is(session, "character") && (is(session, SyncroSimNotFound(warn = FALSE)))) {
     return(SyncroSimNotFound())
   }
 
-  if ((class(args) == "list") & is.null(names(args))) {
+  if (is(args,"list") & is.null(names(args))) {
     args <- as.character(args)
   }
 
-  if (class(args) == "list") {
+  if (is(args, "list")) {
     # catch invalid library paths - note this only works for args with names
     if (is.element("lib", names(args))) {
       if (!file.exists(args$lib)) {
@@ -116,14 +118,19 @@ command <- function(args, session = NULL, program = "SyncroSim.Console.exe", wai
     }
     sysArgs <- args
   }
-  if (printCmd(session)) {
-    outCmd <- gsub("\"", "", paste(sysArgs, collapse = " "), fixed = TRUE)
-    print(outCmd)
+  
+  if (!is.null(session)){
+    if (printCmd(session)) {
+      outCmd <- gsub("\"", "", paste(sysArgs, collapse = " "), fixed = TRUE)
+      print(outCmd)
+    }
+    progName <- paste0('\"', .filepath(session), "/", program, '\"')
+  } else {
+    progName <- paste0('\"', progName, "/", program, '\"')
   }
 
   tempCmd <- NULL
-  progName <- paste0('\"', .filepath(session), "/", program, '\"')
-
+  
   if (.Platform$OS.type == "windows") {
     tempCmd <- paste(c(progName, sysArgs), collapse = " ")
   } else {

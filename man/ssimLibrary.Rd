@@ -14,7 +14,8 @@ ssimLibrary(
   addon = NULL,
   template = NULL,
   forceUpdate = FALSE,
-  overwrite = FALSE
+  overwrite = FALSE,
+  useConda = FALSE
 )
 
 \S4method{ssimLibrary}{SsimObject}(
@@ -25,7 +26,8 @@ ssimLibrary(
   addon = NULL,
   template = NULL,
   forceUpdate = FALSE,
-  overwrite = FALSE
+  overwrite = FALSE,
+  useConda = FALSE
 )
 
 \S4method{ssimLibrary}{missingOrNULLOrChar}(
@@ -36,7 +38,8 @@ ssimLibrary(
   addon = NULL,
   template = NULL,
   forceUpdate = FALSE,
-  overwrite = FALSE
+  overwrite = FALSE,
+  useConda = FALSE
 )
 }
 \arguments{
@@ -61,6 +64,12 @@ will be used}
 any required updates. If \code{TRUE}, required updates will be applied silently}
 
 \item{overwrite}{logical. If \code{TRUE} an existing SsimLibrary will be overwritten}
+
+\item{useConda}{logical. If set to TRUE, then all packages associated with the 
+Library will have their Conda environments created and Conda environments will
+be used during runtime.If set to FALSE, then no packages will have their 
+Conda environments created and Conda environments will not be used during runtime.
+Default is FALSE.}
 }
 \value{
 Returns a \code{\link{SsimLibrary}} object.
@@ -118,6 +127,7 @@ myLibrary <- ssimLibrary(name = file.path(tempdir(), "mylib"),
                          package = "helloworldSpatial",
                          template = "example-library",
                          overwrite = TRUE)
+                         
 }
 
 }
