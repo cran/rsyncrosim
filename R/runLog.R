@@ -1,4 +1,4 @@
-# Copyright (c) 2021 Apex Resource Management Solution Ltd. (ApexRMS). All rights reserved.
+# Copyright (c) 2023 Apex Resource Management Solution Ltd. (ApexRMS). All rights reserved.
 # MIT License
 #' @include AAAClassDefinitions.R
 NULL
@@ -25,7 +25,8 @@ NULL
 #' myLibrary <- ssimLibrary(name = myLibraryName,
 #'                          session = mySession, 
 #'                          package = "helloworldSpatial",
-#'                          template = "example-library")
+#'                          template = "example-library",
+#'                          forceUpdate = TRUE)
 #' myProject <- project(myLibrary, project = "Definitions")
 #' myScenario <- scenario(myProject, scenario = "My Scenario")
 #' 

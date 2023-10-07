@@ -1,4 +1,4 @@
-# Copyright (c) 2021 Apex Resource Management Solution Ltd. (ApexRMS). All rights reserved.
+# Copyright (c) 2023 Apex Resource Management Solution Ltd. (ApexRMS). All rights reserved.
 # MIT License
 #' @include AAAClassDefinitions.R
 NULL
@@ -17,7 +17,7 @@ NULL
 #' A logical: \code{TRUE} if the session is silent and \code{FALSE} otherwise.
 #' 
 #' @examples 
-#' \donttest{
+#' \dontrun{
 #' # Set up a SyncroSim Session
 #' mySession <- session()
 #' 

@@ -5,7 +5,8 @@
 \alias{projectId,character-method}
 \alias{projectId,Project-method}
 \alias{projectId,Scenario-method}
-\title{Retrieves projectId of SyncroSim Project or Scenario}
+\alias{projectId,Folder-method}
+\title{Retrieves projectId of SyncroSim Project, Scenario, or Folder}
 \usage{
 projectId(ssimObject)
 
@@ -14,18 +15,22 @@ projectId(ssimObject)
 \S4method{projectId}{Project}(ssimObject)
 
 \S4method{projectId}{Scenario}(ssimObject)
+
+\S4method{projectId}{Folder}(ssimObject)
 }
 \arguments{
-\item{ssimObject}{\code{\link{Scenario}} or \code{\link{Project}} object}
+\item{ssimObject}{\code{\link{Scenario}}, \code{\link{Project}}, or
+\code{\link{Folder}} object}
 }
 \value{
 An integer: project id.
 }
 \description{
-Retrieves the projectId of a SyncroSim \code{\link{Project}} or \code{\link{Scenario}}.
+Retrieves the projectId of a SyncroSim \code{\link{Project}},
+\code{\link{Scenario}}, or \code{\link{Folder}}.
 }
 \examples{
-\donttest{
+\dontrun{
 # Set the file path and name of the new SsimLibrary
 myLibraryName <- file.path(tempdir(),"testlib")
 

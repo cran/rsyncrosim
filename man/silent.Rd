@@ -22,10 +22,10 @@ silent(session) <- value
 \S4method{silent}{Session}(session) <- value
 }
 \arguments{
-\item{session}{\code{\link{Session}} object or character (i.e. filepath to a 
+\item{session}{\code{\link{Session}} object or character (i.e. filepath to a
 session). If \code{NULL}, \code{session()} will be used}
 
-\item{value}{logical. If \code{TRUE} (default), the SyncroSim Session will be 
+\item{value}{logical. If \code{TRUE} (default), the SyncroSim Session will be
 silent}
 }
 \value{
@@ -36,7 +36,7 @@ Checks or sets whether a SyncroSim \code{\link{Session}} is silent or not. In
 a silent session, warnings from the console are ignored.
 }
 \examples{
-\donttest{
+\dontrun{
 # Set up a SyncroSim Session
 mySession <- session()
 

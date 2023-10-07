@@ -12,25 +12,25 @@ sqlStatement(
 )
 }
 \arguments{
-\item{groupBy}{character string or vector of these. Vector of variables 
+\item{groupBy}{character string or vector of these. Vector of variables
 (column names) to \code{GROUP BY} (optional)}
 
-\item{aggregate}{character string of vector of these. Vector of variables 
+\item{aggregate}{character string of vector of these. Vector of variables
 (column names) to aggregate using \code{aggregateFunction} (optional)}
 
-\item{aggregateFunction}{character string. An SQL aggregate function 
+\item{aggregateFunction}{character string. An SQL aggregate function
 (e.g. \code{SUM}, \code{COUNT}). Default is \code{SUM}}
 
-\item{where}{named list. A list of subset variables. Names are column names, 
+\item{where}{named list. A list of subset variables. Names are column names,
 and elements are the values to be selected from each column (optional)}
 }
 \value{
-Returns a list of \code{SELECT}, \code{GROUP BY} and \code{WHERE} SQL statements used by the 
+Returns a list of \code{SELECT}, \code{GROUP BY} and \code{WHERE} SQL statements used by the
 \code{\link{datasheet}} function to construct an SQLite database query.
 }
 \description{
 Creates \code{SELECT}, \code{GROUP BY} and \code{WHERE} SQL statements.
-The resulting list of SQL statements will be converted to an SQLite database 
+The resulting list of SQL statements will be converted to an SQLite database
 query by the \code{\link{datasheet}} function.
 }
 \details{
@@ -40,7 +40,7 @@ Note that it is not possible to construct a complete SQL query at this stage,
 because the \code{\link{datasheet}} function may add ScenarioID and/or ProjectID to the query.
 }
 \examples{
-\donttest{
+\dontrun{
 # Query total Amount for each combination of ScenarioID, Iteration, Timestep and StateLabelXID,
 # including only Timesteps 0,1 and 2, and Iterations 3 and 4.
 mySQL <- sqlStatement(
@@ -63,7 +63,8 @@ mySession <- session()
 myLibrary <- ssimLibrary(name = myLibraryName,
                          session = mySession, 
                          package = "helloworldSpatial",
-                         template = "example-library")
+                         template = "example-library",
+                         forceUpdate = TRUE)
 myProject <- project(myLibrary, project = "Definitions")
 myScenario <- scenario(myProject, scenario = "My Scenario")
 

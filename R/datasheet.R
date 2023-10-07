@@ -1,4 +1,4 @@
-# Copyright (c) 2021 Apex Resource Management Solution Ltd. (ApexRMS). All rights reserved.
+# Copyright (c) 2023 Apex Resource Management Solution Ltd. (ApexRMS). All rights reserved.
 # MIT License
 #' @include AAAClassDefinitions.R
 NULL
@@ -51,8 +51,8 @@ NULL
 #' @param scenario numeric or numeric vector. One or more 
 #'     \code{\link{Scenario}} ids
 #' @param summary logical or character. If \code{TRUE} (default) returns a data.frame of sheet names 
-#'     and other info. If \code{FALSE} returns data.frame or list of data.frames. If \code{"CORE"} returns 
-#'     data.frame of sheet names and other info including built-in core SyncroSim Datasheets
+#'     and other info including built-in core SyncroSim Datasheets. If \code{FALSE} returns 
+#'     data.frame or list of data.frames.
 #' @param optional logical. If \code{summary=TRUE} and \code{optional=TRUE} returns 
 #'     only \code{scope}, \code{name} and \code{displayName}. If \code{summary=FALSE} and \code{optional=TRUE} returns 
 #'     all of the Datasheet's columns, including the optional columns. If 
@@ -83,12 +83,12 @@ NULL
 #'     \code{\link{sqlStatement}} flags. Default is \code{FALSE}
 #' 
 #' @return 
-#' If \code{summary=TRUE} or \code{summary="CORE"} returns a data.frame of Datasheet names 
+#' If \code{summary=TRUE} returns a data.frame of Datasheet names 
 #' and other information, otherwise returns a data.frame or list of these.
 #' 
 #'
 #' @examples 
-#' \donttest{
+#' \dontrun{
 #' # Install helloworldSpatial package from package server
 #' addPackage("helloworldSpatial")
 #' 
@@ -102,7 +102,8 @@ NULL
 #' myLibrary <- ssimLibrary(name = myLibraryName,
 #'                          session = mySession, 
 #'                          package = "helloworldSpatial",
-#'                          template = "example-library")
+#'                          template = "example-library",
+#'                          forceUpdate = TRUE)
 #'                          
 #' # Set the Project and Scenario
 #' myProject <- project(myLibrary, project = "Definitions")
@@ -139,9 +140,6 @@ NULL
 #' # Optimize query
 #' myDatasheet <- datasheet(myScenario, name = "RunControl", fastQuery = TRUE)
 #' 
-#' # Get all the SsimLibrary core Datasheet info
-#' myDatasheets <- datasheet(myLibrary, summary = "CORE")
-#' 
 #' # Get specific SsimLibrary core Datasheet
 #' myDatasheet <- datasheet(myLibrary, name = "core_Backup")
 #' 
@@ -157,11 +155,21 @@ NULL
 #' 
 #' @export
 #' @import RSQLite
-setGeneric("datasheet", function(ssimObject, name = NULL, project = NULL, scenario = NULL, summary = NULL, optional = FALSE, empty = FALSE, filterColumn = NULL, filterValue = NULL, lookupsAsFactors = TRUE, sqlStatement = list(select = "SELECT *", groupBy = ""), includeKey = FALSE, forceElements = FALSE, fastQuery = FALSE) standardGeneric("datasheet"))
+setGeneric("datasheet", function(ssimObject, name = NULL, project = NULL, scenario = NULL, 
+                                 summary = NULL, optional = FALSE, empty = FALSE, 
+                                 filterColumn = NULL, filterValue = NULL, 
+                                 lookupsAsFactors = TRUE, 
+                                 sqlStatement = list(select = "SELECT *", groupBy = ""), 
+                                 includeKey = FALSE, forceElements = FALSE, 
+                                 fastQuery = FALSE) standardGeneric("datasheet"))
 
 # Handles case where ssimObject is list of Scenario or Project objects
 #' @rdname datasheet
-setMethod("datasheet", signature(ssimObject = "list"), function(ssimObject, name, project, scenario, summary, optional, empty, filterColumn, filterValue, lookupsAsFactors, sqlStatement, includeKey, forceElements, fastQuery) {
+setMethod("datasheet", 
+          signature(ssimObject = "list"), 
+          function(ssimObject, name, project, scenario, summary, optional, empty, 
+                   filterColumn, filterValue, lookupsAsFactors, sqlStatement, 
+                   includeKey, forceElements, fastQuery) {
   cScn <- ssimObject[[1]]
   x <- NULL
   if (is(cScn, "Scenario")) {
@@ -186,12 +194,20 @@ setMethod("datasheet", signature(ssimObject = "list"), function(ssimObject, name
 })
 
 #' @rdname datasheet
-setMethod("datasheet", signature(ssimObject = "character"), function(ssimObject, name, project, scenario, summary, optional, empty, filterColumn, filterValue, lookupsAsFactors, sqlStatement, includeKey, fastQuery) {
+setMethod("datasheet", 
+          signature(ssimObject = "character"), 
+          function(ssimObject, name, project, scenario, summary, optional, empty, 
+                   filterColumn, filterValue, lookupsAsFactors, sqlStatement, 
+                   includeKey, fastQuery) {
   return(SyncroSimNotFound(ssimObject))
 })
 
 #' @rdname datasheet
-setMethod("datasheet", signature(ssimObject = "SsimObject"), function(ssimObject, name, project, scenario, summary, optional, empty, filterColumn, filterValue, lookupsAsFactors, sqlStatement, includeKey, forceElements, fastQuery) {
+setMethod("datasheet", 
+          signature(ssimObject = "SsimObject"), 
+          function(ssimObject, name, project, scenario, summary, optional, empty, 
+                   filterColumn, filterValue, lookupsAsFactors, sqlStatement, 
+                   includeKey, forceElements, fastQuery) {
   temp <- NULL
   ProjectID <- NULL
   ScenarioID <- NULL
@@ -242,9 +258,13 @@ setMethod("datasheet", signature(ssimObject = "SsimObject"), function(ssimObject
     }
   }
   
+  if (summary == "CORE"){
+    summary <- TRUE
+  }
+  
   # if summary, don't need to bother with project/scenario ids: sheet info doesn't vary among project/scenarios in a project
   if (summary == TRUE) {
-    sumInfo <- .datasheets(x, project[[1]], scenario[[1]])
+    sumInfo <- .datasheets(x, project[[1]], scenario[[1]], core = TRUE)
     if (nrow(sumInfo) == 0) {
       stop("No datasheets available")
     }
@@ -264,17 +284,6 @@ setMethod("datasheet", signature(ssimObject = "SsimObject"), function(ssimObject
     sumInfo <- subset(sumInfo, is.element(name, allNames))
   }
   
-  # If summary is set to "CORE" use the --includesys command line flag to get core datasheets
-  if (summary == "CORE") {
-    sumInfo <- .datasheets(x, project[[1]], scenario[[1]], core = TRUE)
-    sumInfo$order <- seq(1, nrow(sumInfo))
-    if (is.null(name)) {
-      name <- sumInfo$name
-      allNames <- name
-    }
-    sumInfo <- subset(sumInfo, is.element(name, allNames))
-  }
-  
   # now assume we have one or more names
   if (is.null(name) & summary == FALSE) {
     sumInfo <- .datasheets(x, project[[1]], scenario[[1]])
@@ -283,7 +292,7 @@ setMethod("datasheet", signature(ssimObject = "SsimObject"), function(ssimObject
     stop("Something is wrong in datasheet().")
   }
   
-  if ((summary == TRUE | summary == "CORE") & !optional) {
+  if ((summary == TRUE) & !optional) {
     sumInfo <- subset(sumInfo, select = c("scope", "name", "displayName", "order"))
     sumInfo[order(sumInfo$order), ]
     sumInfo$order <- NULL
@@ -291,7 +300,7 @@ setMethod("datasheet", signature(ssimObject = "SsimObject"), function(ssimObject
   }
   
   # Add data info - only for scenario scope datasheets if sid is defined
-  if (summary == TRUE | summary == "CORE") {
+  if (summary == TRUE) {
     # if no scenario scope sheets, return sumInfo without checking for data
     scnSheetSum <- sum(sumInfo$scope == "scenario")
     
@@ -395,7 +404,7 @@ setMethod("datasheet", signature(ssimObject = "SsimObject"), function(ssimObject
           args <- assignPidSid(args, sheetNames, pid, sid)
           tt <- command(args, session = session(x))
           inputDatasheet <- read.csv(tempFile, as.is = TRUE, encoding = "UTF-8")
-          newColID <- inputDatasheet[grepl(filterValue, inputDatasheet$Name, fixed=T),][[filterColumn]] ## when to use Name vs Filename???
+          newColID <- inputDatasheet[inputDatasheet$Name == filterValue,][[filterColumn]] ## when to use Name vs Filename???
           
           if (length(newColID) == 0) {
             stop("filterValue not found in filterColumn.")
@@ -457,6 +466,7 @@ setMethod("datasheet", signature(ssimObject = "SsimObject"), function(ssimObject
             
             args <- list(export = NULL, lib = .filepath(x), sheet = name, file = tempFile, valsheetsonly = NULL, force = NULL)
             args <- assignPidSid(args, sheetNames, pid[1], sid[1]) # TODO make sure vector
+            
             tt <- command(args, .session(x))
             
             if (!identical(tt, "saved")) {
@@ -469,6 +479,7 @@ setMethod("datasheet", signature(ssimObject = "SsimObject"), function(ssimObject
             
             args <- list(export = NULL, lib = .filepath(x), sheet = name, file = tempFile, queryonly = NULL, force = NULL, includepk = NULL, colswithdata = NULL)
             args <- assignPidSid(args, sheetNames, pid[id], sid[id])
+            
             tt <- command(args, .session(x))
             
             # If error, catch it
@@ -511,7 +522,6 @@ setMethod("datasheet", signature(ssimObject = "SsimObject"), function(ssimObject
           # If fastQuery is false, do this
           # THis happens IF fast query is FALSE and if not complex
           # It writes out the csv to temp file
-          
           if (!optional & (sheetNames$scope != "library")) {
             args <- list(export = NULL, lib = .filepath(x), sheet = name, file = tempFile, valsheets = NULL, extfilepaths = NULL, includepk = NULL, force = NULL, colswithdata = NULL) # filepath=NULL
           } else {
@@ -626,6 +636,7 @@ setMethod("datasheet", signature(ssimObject = "SsimObject"), function(ssimObject
           tempFile <- paste0(.tempfilepath(x), "/", name, ".csv")
           args <- list(export = NULL, lib = .filepath(x), sheet = name, file = tempFile, valsheetsonly = NULL, force = NULL, includepk = NULL)
           args <- assignPidSid(args, sheetNames, pid, sid)
+          
           tt <- command(args, .session(x))
           if (!identical(tt, "saved")) {
             stop(tt, "You might be asking for a datasheet at the project level but that datasheet has a scenario scope")
@@ -683,6 +694,11 @@ setMethod("datasheet", signature(ssimObject = "SsimObject"), function(ssimObject
         }
         if (cRow$valType == "DataSheet") {
           if (lookupsAsFactors) {
+            # Find display member to create factors from
+            tt <- command(args = list(lib = .filepath(x), list = NULL, datasheets = NULL, includesys = NULL), session = .session(x))
+            tt <- .dataframeFromSSim(tt, csv = FALSE)
+            displayMem <- tt[tt$name == cRow$formula1,]$displayMember
+            
             # console export can't handle multiple projects/scenarios - so query database directly if necessary.
             if (directQuery) {
               lookupSheet <- DBI::dbReadTable(con, name = cRow$formula1)
@@ -690,6 +706,7 @@ setMethod("datasheet", signature(ssimObject = "SsimObject"), function(ssimObject
               lookupPath <- gsub(name, cRow$formula1, tempFile, fixed = TRUE)
               if (!file.exists(lookupPath)) {
                 lookupSheet <- data.frame(Name = NULL)
+                names(lookupSheet)[names(lookupSheet) == "Name"] <- displayMem
               } else {
                 lookupSheet <- read.csv(lookupPath, as.is = TRUE)
               }
@@ -715,17 +732,17 @@ setMethod("datasheet", signature(ssimObject = "SsimObject"), function(ssimObject
             }
             if (nrow(lookupSheet) > 0) {
               lookupSheet <- lookupSheet[order(lookupSheet[[names(lookupSheet[1])]]), ]
-              lookupLevels <- lookupSheet$Name
+              lookupLevels <- lookupSheet[[displayMem]]
             } else {
               lookupLevels <- c()
             }
             if (is.numeric(sheet[[cRow$name]])) {
               if (nrow(lookupSheet) > 0) {
-                if (length(intersect("Name", names(lookupSheet))) == 0) {
+                if (length(intersect(displayMem, names(lookupSheet))) == 0) {
                   stop("Something is wrong. Expecting Name in lookup table.")
                 }
                 
-                lookupMerge <- subset(lookupSheet, select = c(names(lookupSheet)[1], "Name"))
+                lookupMerge <- subset(lookupSheet, select = c(names(lookupSheet)[1], displayMem))
                 
                 names(lookupMerge) <- c(cRow$name, "lookupName")
                 sheet <- merge(sheet, lookupMerge, all.x = TRUE)

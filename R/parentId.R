@@ -1,20 +1,22 @@
-# Copyright (c) 2021 Apex Resource Management Solution Ltd. (ApexRMS). All rights reserved.
+# Copyright (c) 2023 Apex Resource Management Solution Ltd. (ApexRMS). All rights reserved.
 # MIT License
 #' @include AAAClassDefinitions.R
 NULL
 
-#' Retrieves the parent Scenario id
+#' Retrieves the parent Scenario id or parent Folder id
 #'
-#' Retrieves the id of the parent of a SyncroSim results Scenario.
+#' Retrieves the id of the parent of a SyncroSim results Scenario or a SyncroSim
+#' Folder.
 #'
-#' @param scenario \code{\link{Scenario}} object
+#' @param child \code{\link{Scenario}} or \code{\link{Folder}} object
 #' 
 #' @return 
-#' An integer id of the parent Scenario. If the input Scenario does not have a
-#' parent, the function returns \code{NA}
+#' An integer id of the parent Scenario if input is a Scenario, or an integer 
+#' id of the parent Folder if input is a Folder. If the input Scenario or Folder 
+#' does not have a parent, the function returns \code{NA}
 #' 
 #' @examples 
-#' \donttest{
+#' \dontrun{
 #' # Install helloworldSpatial SyncroSim package
 #' addPackage("helloworldSpatial")
 #' 
@@ -26,7 +28,8 @@ NULL
 #' myLibrary <- ssimLibrary(name = myLibraryName,
 #'                          session = mySession,
 #'                          package = "helloworldSpatial",
-#'                          template = "example-library")
+#'                          template = "example-library",
+#'                          forceUpdate = TRUE)
 #' myProject <- project(myLibrary, project = "Definitions")
 #' myScenario <- scenario(myProject, scenario = "My Scenario")
 #' 
@@ -38,17 +41,25 @@ NULL
 #' }
 #' 
 #' @export
-setGeneric("parentId", function(scenario) standardGeneric("parentId"))
+setGeneric("parentId", function(child) standardGeneric("parentId"))
 
 #' @rdname parentId
-setMethod("parentId", signature(scenario = "character"), function(scenario) {
-  return(SyncroSimNotFound(scenario))
+setMethod("parentId", signature(child = "character"), function(child) {
+  return(SyncroSimNotFound(child))
 })
 
 #' @rdname parentId
-setMethod("parentId", signature(scenario = "Scenario"), function(scenario) {
-  if (scenario@parentId == 0) {
+setMethod("parentId", signature(child = "Scenario"), function(child) {
+  if (child@parentId == 0) {
     return(NA)
   }
-  return(scenario@parentId)
+  return(child@parentId)
+})
+
+#' @rdname parentId
+setMethod("parentId", signature(child = "Folder"), function(child) {
+  if (child@parentId == 0){
+    return(NA)
+  }
+  return(child@parentId)
 })

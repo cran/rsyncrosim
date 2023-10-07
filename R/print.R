@@ -1,4 +1,4 @@
-# Copyright (c) 2021 Apex Resource Management Solution Ltd. (ApexRMS). All rights reserved.
+# Copyright (c) 2023 Apex Resource Management Solution Ltd. (ApexRMS). All rights reserved.
 # MIT License
 #' @include AAAClassDefinitions.R
 NULL
@@ -33,6 +33,20 @@ setMethod(
   }
 )
 
+setMethod(
+  "print", "Folder",
+  function(x, ...) {
+    show(x)
+  }
+)
+
+setMethod(
+  "show", "Folder",
+  function(object) {
+    .printSsim(object)
+  }
+)
+
 .printSsim <- function(x, ...) {
   outStrings <- list()
 
@@ -45,8 +59,8 @@ setMethod(
     outName <- paste0(cName, " [", class(cSlot), "]")
 
     outString <- ""
-    if (is.element(class(cSlot), c("numeric", "character", "logical"))) {
-      outString <- paste0(outString, paste(cSlot, collapse = ","))
+    if (is.element(class(cSlot), c("numeric", "character", "logical", "integer"))) {
+        outString <- paste0(outString, paste(cSlot, collapse = ","))
     }
 
     if (is.element(class(cSlot), "Session")) {

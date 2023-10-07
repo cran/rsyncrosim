@@ -1,4 +1,4 @@
-# Copyright (c) 2021 Apex Resource Management Solution Ltd. (ApexRMS). All rights reserved.
+# Copyright (c) 2023 Apex Resource Management Solution Ltd. (ApexRMS). All rights reserved.
 # MIT License
 #' @include AAAClassDefinitions.R
 NULL
@@ -29,7 +29,7 @@ NULL
 #' \code{\link{datasheet}} function to construct an SQLite database query.
 #'
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' # Query total Amount for each combination of ScenarioID, Iteration, Timestep and StateLabelXID,
 #' # including only Timesteps 0,1 and 2, and Iterations 3 and 4.
 #' mySQL <- sqlStatement(
@@ -52,7 +52,8 @@ NULL
 #' myLibrary <- ssimLibrary(name = myLibraryName,
 #'                          session = mySession, 
 #'                          package = "helloworldSpatial",
-#'                          template = "example-library")
+#'                          template = "example-library",
+#'                          forceUpdate = TRUE)
 #' myProject <- project(myLibrary, project = "Definitions")
 #' myScenario <- scenario(myProject, scenario = "My Scenario")
 #' 

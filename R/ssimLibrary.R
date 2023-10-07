@@ -1,11 +1,11 @@
-# Copyright (c) 2021 Apex Resource Management Solution Ltd. (ApexRMS). All rights reserved.
+# Copyright (c) 2023 Apex Resource Management Solution Ltd. (ApexRMS). All rights reserved.
 # MIT License
 #' @include AAAClassDefinitions.R
 NULL
 
 setMethod(
   f = "initialize", signature = "SsimLibrary",
-  definition = function(.Object, name = NULL, package = NULL, session = NULL, addon = NULL, template = NULL, forceUpdate = FALSE, overwrite = FALSE, useConda = FALSE) {
+  definition = function(.Object, name = NULL, package = NULL, session = NULL, addon = NULL, template = NULL, forceUpdate = FALSE, overwrite = FALSE, useConda = NULL) {
     enabled <- NULL
     if (is.null(session)) {
       e <- ssimEnvironment()
@@ -15,7 +15,7 @@ setMethod(
         session <- .session()
       }
     }
-
+    
     if (is.character(session)) {
       session <- .session(session)
     }
@@ -106,7 +106,7 @@ setMethod(
           tt <- command(args, session)
           addonTempsDataframe <- read.csv(text = tt)
           addonTemplate <- paste0(addon, "_", template)
-          addonTemplateExists <- addonTemplate %in% addonTempsDataframe
+          addonTemplateExists <- addonTemplate %in% addonTempsDataframe$Name
         } else {
           addonTemplateExists <- FALSE
         }
@@ -225,14 +225,16 @@ setMethod(
       }
     }
     
-    if (useConda == FALSE){
-      tt <- command(list(setprop = NULL, lib = path, useconda = "no"), session)
-    } else {
-      tt <- command(list(setprop = NULL, lib = path, useconda = "yes"), session)
-      if (useConda == TRUE){
-        currentPackages <- unique(datasheets$package)
-      }
-      createCondaEnv(path, currentPackages, session)
+    if (!is.null(useConda)){
+      if (useConda == FALSE){
+        tt <- command(list(setprop = NULL, lib = path, useconda = "no"), session)
+      } else {
+        tt <- command(list(setprop = NULL, lib = path, useconda = "yes"), session)
+        if (useConda == TRUE){
+          currentPackages <- unique(datasheets$package)
+        }
+        createCondaEnv(path, currentPackages, session)
+      } 
     }
 
     .Object@session <- session
@@ -242,7 +244,7 @@ setMethod(
   }
 )
 
-setGeneric(".ssimLibrary", function(name = NULL, package = NULL, session = NULL, addon = NULL, template = NULL, forceUpdate = FALSE, overwrite = FALSE, useConda = FALSE) standardGeneric(".ssimLibrary"))
+setGeneric(".ssimLibrary", function(name = NULL, package = NULL, session = NULL, addon = NULL, template = NULL, forceUpdate = FALSE, overwrite = FALSE, useConda = NULL) standardGeneric(".ssimLibrary"))
 
 setMethod(".ssimLibrary", signature(name = "missingOrNULLOrChar"), function(name, package, session, addon, template, forceUpdate, overwrite, useConda) {
   return(new("SsimLibrary", name, package, session, addon, forceUpdate))
@@ -283,7 +285,7 @@ setMethod(".ssimLibrary", signature(name = "SsimObject"), function(name, package
 #'  Library will have their Conda environments created and Conda environments will
 #'  be used during runtime.If set to FALSE, then no packages will have their 
 #'  Conda environments created and Conda environments will not be used during runtime.
-#'  Default is FALSE.
+#'  Default is NULL
 #' 
 #' @return 
 #' Returns a \code{\link{SsimLibrary}} object.
@@ -299,13 +301,13 @@ setMethod(".ssimLibrary", signature(name = "SsimObject"), function(name, package
 #'          in working directory. If no file suffix provided in string then add 
 #'          .ssim. Attempts to open a SsimLibrary of that name. If SsimLibrary does not 
 #'          exist creates a SsimLibrary of type package in the current working directory.}
-#'   \item {If given a name and a package: }{Create/open a SsimLibrary called <name>.ssim. 
+#'   \item {If given a name and a package: }{Create/open a SsimLibrary called [name].ssim. 
 #'          Returns an error if the SsimLibrary already exists but is a different type 
 #'          of package.}
 #' }
 #' 
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' # Make sure packages are installed
 #' addPackage("stsim")
 #' addPackage("stsimsf")
@@ -334,12 +336,13 @@ setMethod(".ssimLibrary", signature(name = "SsimObject"), function(name, package
 #'                          session = mySession,
 #'                          package = "helloworldSpatial",
 #'                          template = "example-library",
-#'                          overwrite = TRUE)
+#'                          overwrite = TRUE,
+#'                          forceUpdate = TRUE)
 #'                          
 #' }
 #' 
 #' @export
-setGeneric("ssimLibrary", function(name = NULL, summary = NULL, package = NULL, session = NULL, addon = NULL, template = NULL, forceUpdate = FALSE, overwrite = FALSE, useConda = FALSE) standardGeneric("ssimLibrary"))
+setGeneric("ssimLibrary", function(name = NULL, summary = NULL, package = NULL, session = NULL, addon = NULL, template = NULL, forceUpdate = FALSE, overwrite = FALSE, useConda = NULL) standardGeneric("ssimLibrary"))
 
 #' @rdname ssimLibrary
 setMethod("ssimLibrary", signature(name = "SsimObject"), function(name, summary, package, session, addon, template, forceUpdate, overwrite, useConda) {

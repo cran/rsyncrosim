@@ -1,4 +1,4 @@
-# Copyright (c) 2021 Apex Resource Management Solution Ltd. (ApexRMS). All rights reserved.
+# Copyright (c) 2023 Apex Resource Management Solution Ltd. (ApexRMS). All rights reserved.
 # MIT License
 #' @include AAAClassDefinitions.R
 NULL
@@ -6,17 +6,17 @@ NULL
 #' Retrieves the path to a SyncroSim object on disk
 #'
 #' Retrieves the path to a SyncroSim \code{\link{Session}}, 
-#' \code{\link{SsimLibrary}}, \code{\link{Project}} or \code{\link{Scenario}} 
-#' on disk.
+#' \code{\link{SsimLibrary}}, \code{\link{Project}}, \code{\link{Scenario}}, 
+#' of \code{\link{Folder}} on disk.
 #'
-#' @param ssimObject \code{\link{Session}}, 
-#'     \code{\link{Project}}, or \code{\link{SsimLibrary}} object
+#' @param ssimObject \code{\link{Session}}, \code{\link{Project}}, 
+#' \code{\link{SsimLibrary}}, or \code{\link{Folder}} object
 #' 
 #' @return 
 #' A character string: the path to a SyncroSim object on disk.
 #' 
 #' @examples 
-#' \donttest{
+#' \dontrun{
 #' # Specify file path and name of new SsimLibrary
 #' myLibraryName <- file.path(tempdir(), "testlib")
 #' 
@@ -42,6 +42,9 @@ setMethod("filepath", signature(ssimObject = "Session"), function(ssimObject) ss
 #' @rdname filepath
 setMethod("filepath", signature(ssimObject = "SsimObject"), function(ssimObject) ssimObject@filepath)
 
+#' @rdname filepath
+setMethod("filepath", signature(ssimObject = "Folder"), function(ssimObject) ssimObject@filepath)
+
 #' Retrieves the temporary file path to a SyncroSim object on disk
 #'
 #' Retrieves the temporary file path to a SyncroSim \code{\link{Session}}, 
@@ -55,7 +58,7 @@ setMethod("filepath", signature(ssimObject = "SsimObject"), function(ssimObject)
 #' A character string: the temporary file path to a SyncroSim object on disk.
 #' 
 #' @examples 
-#' \donttest{
+#' \dontrun{
 #' # Specify file path and name of new SsimLibrary
 #' myLibraryName <- file.path(tempdir(), "testlib")
 #' 

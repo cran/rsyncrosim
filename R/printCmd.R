@@ -1,4 +1,4 @@
-# Copyright (c) 2021 Apex Resource Management Solution Ltd. (ApexRMS). All rights reserved.
+# Copyright (c) 2023 Apex Resource Management Solution Ltd. (ApexRMS). All rights reserved.
 # MIT License
 #' @include AAAClassDefinitions.R
 NULL
@@ -17,7 +17,7 @@ NULL
 #' \code{FALSE} if it is not.
 #' 
 #' @examples 
-#' \donttest{
+#' \dontrun{
 #' # Set SyncroSim Session
 #' mySession <- session()
 #' 

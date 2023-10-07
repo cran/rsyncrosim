@@ -1,22 +1,22 @@
-# Copyright (c) 2021 Apex Resource Management Solution Ltd. (ApexRMS). All rights reserved.
+# Copyright (c) 2023 Apex Resource Management Solution Ltd. (ApexRMS). All rights reserved.
 # MIT License
 #' @include AAAClassDefinitions.R
 NULL
 
-#' Name of a SsimLibrary, Project or Scenario
+#' Name of a SsimLibrary, Project, Scenario, or Folder
 #'
 #' Retrieves or sets the name of a \code{\link{SsimLibrary}}, 
-#' \code{\link{Project}} or \code{\link{Scenario}}.
+#' \code{\link{Project}}, \code{\link{Scenario}}, or \code{\link{Folder}}.
 #'
 #' @param ssimObject \code{\link{Scenario}}, \code{\link{Project}}, 
-#' or \code{\link{SsimLibrary}} object
+#' \code{\link{SsimLibrary}}, or\code{\link{Folder}} object
 #' @param value character string of the new name
 #' 
 #' @return 
 #' A character string: the name of the SsimObject.
 #' 
 #' @examples 
-#' \donttest{
+#' \dontrun{
 #' # Specify file path and name of new SsimLibrary
 #' myLibraryName <- file.path(tempdir(), "testlib")
 #' 
@@ -25,11 +25,13 @@ NULL
 #' myLibrary <- ssimLibrary(name = myLibraryName, session = mySession)
 #' myProject <- project(myLibrary, project = "Definitions")
 #' myScenario <- scenario(myProject, scenario = "My Scenario")
+#' myFolder <- folder(myProject, folder = "New Folder")
 #' 
 #' # Retrieve names of the SsimObjects
 #' name(myLibrary)
 #' name(myProject)
 #' name(myScenario)
+#' name(myFolder)
 #' 
 #' # Set the name of the SyncroSim Scenario
 #' name(myScenario) <- "My Scenario Name"
@@ -59,6 +61,12 @@ setMethod("name", signature(ssimObject = "Scenario"), function(ssimObject) {
 #' @rdname name
 setMethod("name", signature(ssimObject = "Project"), function(ssimObject) {
   info <- project(ssimObject, summary = TRUE)
+  return(info$Name)
+})
+
+#' @rdname name
+setMethod("name", signature(ssimObject = "Folder"), function(ssimObject) {
+  info <- getFolderData(ssimObject)
   return(info$Name)
 })
 
@@ -107,6 +115,19 @@ setReplaceMethod(
   signature = "Scenario",
   definition = function(ssimObject, value) {
     tt <- command(list(setprop = NULL, lib = .filepath(ssimObject), sid = .scenarioId(ssimObject), name = value), .session(ssimObject))
+    if (!identical(tt, "saved")) {
+      stop(tt)
+    }
+    return(ssimObject)
+  }
+)
+
+#' @rdname name
+setReplaceMethod(
+  f = "name",
+  signature = "Folder",
+  definition = function(ssimObject, value) {
+    tt <- command(list(setprop = NULL, lib = .filepath(ssimObject), fid = .folderId(ssimObject), name = value), .session(ssimObject))
     if (!identical(tt, "saved")) {
       stop(tt)
     }

@@ -18,7 +18,7 @@ to a Session where the printCmd settings are retrieved from. If \code{NULL} (def
 \code{session()} will be used}
 }
 \value{
-A logical : \code{TRUE} if the session is configured to print commands and 
+A logical : \code{TRUE} if the session is configured to print commands and
 \code{FALSE} if it is not.
 }
 \description{
@@ -26,7 +26,7 @@ Retrieves a printCmd setting of a \code{\link{Session}} object. The printCmd
 setting configures a Session for printing commands sent to the console.
 }
 \examples{
-\donttest{
+\dontrun{
 # Set SyncroSim Session
 mySession <- session()
 

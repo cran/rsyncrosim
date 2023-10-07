@@ -1,4 +1,4 @@
-# Copyright (c) 2021 Apex Resource Management Solution Ltd. (ApexRMS). All rights reserved.
+# Copyright (c) 2023 Apex Resource Management Solution Ltd. (ApexRMS). All rights reserved.
 # MIT License
 
 #' SyncroSim Environment
@@ -34,7 +34,8 @@ ssimEnvironment <- function() {
     BeforeIteration = as.integer(Sys.getenv(tolower("SSIM_STOCHASTIC_TIME_BEFORE_ITERATION"), unset = -1)),
     AfterIteration = as.integer(Sys.getenv(tolower("SSIM_STOCHASTIC_TIME_AFTER_ITERATION"), unset = -1)),
     BeforeTimestep = as.integer(Sys.getenv(tolower("SSIM_STOCHASTIC_TIME_BEFORE_TIMESTEP"), unset = -1)),
-    AfterTimestep = as.integer(Sys.getenv(tolower("SSIM_STOCHASTIC_TIME_AFTER_TIMESTEP"), unset = -1)), stringsAsFactors = FALSE
+    AfterTimestep = as.integer(Sys.getenv(tolower("SSIM_STOCHASTIC_TIME_AFTER_TIMESTEP"), unset = -1)),
+    IsChildProcess = Sys.getenv(tolower("SSIM_IS_CHILD_PROCESS"), unset = "false"), stringsAsFactors = FALSE
   ))
 }
 
@@ -256,18 +257,21 @@ updateRunLog <- function(..., sep = "", type = "status") {
   if(length(list(...)) == 0)
     stop("Please provide a message to write to the run log.")
   
-  if(!type %in% c("status", "info", "warning"))
-    stop("Please select a valid run log message type.")
+  # Concatenate objects to form the message
+  fullMessage <- paste(..., sep = sep, collapse = "")
   
-  msg <- paste(..., sep = sep, collapse = "")
-  msg <- paste0("ssim-task-log=", strsplit(msg, "\n")[[1]], "\r\n")
+  # Split the message at line breaks
+  splitMessage <- strsplit(fullMessage, "\n")[[1]]
   
-  if(type == "info")
-    msg[1] <- sub("ssim-task-log", "ssim-task-info", msg[1])
-  if(type == "warning")
-    msg[1] <- sub("ssim-task-log", "ssim-task-warning", msg[1])
-   
-  for(m in msg) {
+  # Standardize surrounding empty lines
+  if(splitMessage[1] == "") splitMessage <- splitMessage[-1]
+  if(splitMessage[length(splitMessage)] != "") splitMessage <- c(splitMessage, "")
+  
+  # Annotate messages
+  annotatedMessage <- paste0("ssim-task-log=", splitMessage, "\r\n")
+  
+  # Send to SyncroSim
+  for(m in annotatedMessage) {
     cat(m)
     flush.console()
   }

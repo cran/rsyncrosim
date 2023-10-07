@@ -24,19 +24,19 @@ mergeDependencies(ssimObject) <- value
 \arguments{
 \item{ssimObject}{\code{\link{Scenario}} object}
 
-\item{value}{logical. If \code{TRUE} the Scenario will be set to merge 
+\item{value}{logical. If \code{TRUE} the Scenario will be set to merge
 dependencies at run time. Default is \code{FALSE}}
 }
 \value{
-A logical: \code{TRUE} if the scenario is configured to merge dependencies at run time, 
+A logical: \code{TRUE} if the scenario is configured to merge dependencies at run time,
 and \code{FALSE} otherwise.
 }
 \description{
-Retrieves or sets whether or not a \code{\link{Scenario}} is configured to 
+Retrieves or sets whether or not a \code{\link{Scenario}} is configured to
 merge dependencies at run time.
 }
 \examples{
-\donttest{
+\dontrun{
 # Specify file path and name of new SsimLibrary
 myLibraryName <- file.path(tempdir(),"testlib")
 
