@@ -1,4 +1,4 @@
-# Copyright (c) 2023 Apex Resource Management Solution Ltd. (ApexRMS). All rights reserved.
+# Copyright (c) 2024 Apex Resource Management Solution Ltd. (ApexRMS). All rights reserved.
 # MIT License
 #' @include AAAClassDefinitions.R
 NULL
@@ -320,7 +320,6 @@ getFolderData <- function(x) {
   
   # Clean up dataframe names and columns
   names(out) <- sapply(names(out), pascal)
-  colnames(out)[colnames(out) == "IsLite"] ="Published"
   colnames(out)[colnames(out) == "ID"] ="FolderID"
   out <- subset(out, select = -c(X))
   
@@ -335,10 +334,11 @@ getFolderData <- function(x) {
 #
 # @param x SyncroSim Library, Project, Scenario, or Folder object.
 # @param folderId integer value of the child Folder ID.
+# @param item string indicating type of the child item ("Folder" or "Scenario")
 # @return integer corresponding to the parent folder ID or project ID.
-getParentFolderId <- function(x, id) {
+getParentFolderId <- function(x, id, item="Folder") {
   df <- getLibraryStructure(x)
-  childRowInd <- which((df$id == id) & (df$item != "Project"))
+  childRowInd <- which((df$id == id) & (df$item == item))
   parentRowInd <- childRowInd - 1
   childRow <- df[childRowInd, ]
   childLevel <- as.numeric(childRow$level)
@@ -434,6 +434,7 @@ getLibraryStructure <- function(x) {
     i = i + 1
   }
   
+  libStructureDF <- libStructureDF[!is.na(libStructureDF$item),]
   return(libStructureDF)
 }
 

@@ -1,4 +1,4 @@
-# Copyright (c) 2023 Apex Resource Management Solution Ltd. (ApexRMS). All rights reserved.
+# Copyright (c) 2024 Apex Resource Management Solution Ltd. (ApexRMS). All rights reserved.
 # MIT License
 #' @include AAAClassDefinitions.R
 NULL
@@ -52,7 +52,8 @@ setMethod("folderId", signature(ssimObject = "Folder"), function(ssimObject) {
 })
 #' @rdname folderId
 setMethod("folderId", signature(ssimObject = "Scenario"), function(ssimObject) {
-  parentFolderId <- getParentFolderId(ssimObject, ssimObject@scenarioId)
+  parentFolderId <- getParentFolderId(ssimObject, ssimObject@scenarioId, 
+                                      item="Scenario")
   folderInfo <- getFolderData(ssimObject)
   if (!parentFolderId %in% folderInfo$FolderID){
     parentFolderId <- NA

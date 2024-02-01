@@ -1,4 +1,4 @@
-# Copyright (c) 2023 Apex Resource Management Solution Ltd. (ApexRMS). All rights reserved.
+# Copyright (c) 2024 Apex Resource Management Solution Ltd. (ApexRMS). All rights reserved.
 # MIT License
 #' @include AAAClassDefinitions.R
 NULL
@@ -126,7 +126,7 @@ setMethod("saveDatasheet", signature(ssimObject = "character"), function(ssimObj
 
 #' @rdname saveDatasheet
 setMethod("saveDatasheet", signature(ssimObject = "SsimObject"), function(ssimObject, data, name, fileData, append, forceElements, force, breakpoint, import, path) {
-  
+
   isFile <- NULL
   x <- ssimObject
   if (is.null(append)) {
@@ -224,35 +224,41 @@ setMethod("saveDatasheet", signature(ssimObject = "SsimObject"), function(ssimOb
         stop("Name not found in datasheetNames")
       }
     }
+    
+    # Subset data by available columns
+    tt <- command(c("list", "columns", "csv", "allprops", paste0("lib=", .filepath(x)), paste0("sheet=", name)), .session(x))
+    sheetInfo <- .dataframeFromSSim(tt)
+    if (scope == "library"){
+      colsToKeep <- sheetInfo$name[2:length(sheetInfo$name)]
+    } else {
+      colsToKeep <- sheetInfo$name[3:length(sheetInfo$name)]
+    }
+    colsToKeep <- colnames(cDat)[colnames(cDat) %in% colsToKeep]
+    cDat <- cDat[colsToKeep]
 
     # if no fileData found and datasheet contains files, find the files
     if (is.null(fileData)) {
       # get info on sheet type
-      tt <- command(c("list", "columns", "csv", "allprops", paste0("lib=", .filepath(x)), paste0("sheet=", name)), .session(x))
-      sheetInfo <- .dataframeFromSSim(tt)
+      # tt <- command(c("list", "columns", "csv", "allprops", paste0("lib=", .filepath(x)), paste0("sheet=", name)), .session(x))
+      # sheetInfo <- .dataframeFromSSim(tt)
       if (sum(grepl("isExternalFile^True", sheetInfo$properties, fixed = TRUE)) > 0) {
         sheetInfo$isFile <- grepl("isRaster^True", sheetInfo$properties, fixed = TRUE)
       } else {
         sheetInfo$isFile <- grepl("isExternalFile^Yes", sheetInfo$properties, fixed = TRUE)
         # NOTE: this should be isExternalFile - but the flag is set to true even for non-files
       }
-
+      # We only want to keep the valid columns in cDat (not scenario ID, etc.)
+      # if (scope == "library"){
+      #   colsToKeep <- sheetInfo$name[2:length(sheetInfo$name)]
+      # } else {
+      #   colsToKeep <- sheetInfo$name[3:length(sheetInfo$name)]
+      # }
+      # colsToKeep <- colnames(cDat)[colnames(cDat) %in% colsToKeep]
+      # cDat <- cDat[colsToKeep]
+      
       sheetInfo <- subset(sheetInfo, isFile)
 
       sheetInfo <- subset(sheetInfo, is.element(name, names(cDat)))
-      # if(nrow(sheetInfo)>0){
-      #   for(kk in seq(length.out=nrow(sheetInfo))){
-      #     cCol = sheetInfo$name[kk]
-      #     for(ll in seq(length.out=nrow(cDat))){
-      #         if (!is.na(cDat[[cCol]][ll]) && (basename(cDat[[cCol]][ll]) == cDat[[cCol]][ll])) {
-      #         cDat[[cCol]][ll] = paste0(tempdir(),"/",cDat[[cCol]][ll]) # changed to tempdir()
-      #         if(!file.exists(cDat[[cCol]][ll])){
-      #           stop("File ", cDat[[cCol]][ll]," not found.")
-      #         }
-      #       }
-      #     }
-      #   }
-      # }
     }
 
     # Write items to appropriate locations

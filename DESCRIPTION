@@ -1,7 +1,7 @@
 Package: rsyncrosim
 Type: Package
 Title: The R Interface to 'SyncroSim'
-Version: 1.4.9
+Version: 1.5.0
 Authors@R: c(
     person("Colin", "Daniel", email = "colin.daniel@apexrms.com",
            role = "aut"),
@@ -43,16 +43,15 @@ Collate: 'AAAClassDefinitions.R' 'addPackage.R' 'addRow.R' 'addon.R'
         'sqlStatement.R' 'scenario.R' 'project.R' 'ssimLibrary.R'
         'session.R' 'internalWrappers.R' 'mergeDependencies.R'
         'owner.R' 'package.R' 'parentId.R' 'print.R' 'printCmd.R'
-        'published.R' 'readOnly.R' 'removePackage.R' 'rsyncrosim.R'
-        'run.R' 'runLog.R' 'saveDatasheet.R' 'silent.R'
-        'ssimEnvironment.R' 'ssimUpdate.R' 'updatePackage.R'
-        'useConda.R' 'version.R'
+        'readOnly.R' 'removePackage.R' 'rsyncrosim.R' 'run.R'
+        'runLog.R' 'saveDatasheet.R' 'silent.R' 'ssimEnvironment.R'
+        'ssimUpdate.R' 'updatePackage.R' 'useConda.R' 'version.R'
 RoxygenNote: 7.2.3
 URL: <https://syncrosim.github.io/rsyncrosim/>
 BugReports: https://github.com/syncrosim/rsyncrosim/issues/
 Config/testthat/edition: 3
 NeedsCompilation: no
-Packaged: 2023-10-06 21:53:28 UTC; birch
+Packaged: 2024-02-01 16:26:11 UTC; birch
 Author: Colin Daniel [aut],
   Josie Hughes [aut],
   Valentin Lucet [aut],
@@ -64,4 +63,4 @@ Author: Colin Daniel [aut],
   ApexRMS [cph]
 Maintainer: Katie Birchard <katie.birchard@apexrms.com>
 Repository: CRAN
-Date/Publication: 2023-10-07 06:40:02 UTC
+Date/Publication: 2024-02-01 16:40:09 UTC

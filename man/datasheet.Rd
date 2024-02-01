@@ -21,7 +21,9 @@ datasheet(
   sqlStatement = list(select = "SELECT *", groupBy = ""),
   includeKey = FALSE,
   forceElements = FALSE,
-  fastQuery = FALSE
+  fastQuery = FALSE,
+  returnScenarioInfo = FALSE,
+  returnInvisible = FALSE
 )
 
 \S4method{datasheet}{list}(
@@ -38,7 +40,9 @@ datasheet(
   sqlStatement = list(select = "SELECT *", groupBy = ""),
   includeKey = FALSE,
   forceElements = FALSE,
-  fastQuery = FALSE
+  fastQuery = FALSE,
+  returnScenarioInfo = FALSE,
+  returnInvisible = FALSE
 )
 
 \S4method{datasheet}{character}(
@@ -54,7 +58,9 @@ datasheet(
   lookupsAsFactors,
   sqlStatement,
   includeKey,
-  fastQuery
+  fastQuery,
+  returnScenarioInfo,
+  returnInvisible
 )
 
 \S4method{datasheet}{SsimObject}(
@@ -71,7 +77,9 @@ datasheet(
   sqlStatement = list(select = "SELECT *", groupBy = ""),
   includeKey = FALSE,
   forceElements = FALSE,
-  fastQuery = FALSE
+  fastQuery = FALSE,
+  returnScenarioInfo = FALSE,
+  returnInvisible = FALSE
 )
 }
 \arguments{
@@ -131,6 +139,15 @@ returns a data.frame; otherwise returns a list of data.frames. Ignored if
 \item{fastQuery}{logical.  If \code{TRUE}, the request is optimized for
 performance.  Ignored if combined with summary, empty, or
 \code{\link{sqlStatement}} flags. Default is \code{FALSE}}
+
+\item{returnScenarioInfo}{logical. If \code{TRUE}, returns the Scenario ID,
+Scenario Name, Parent ID, and Parent Name columns with the
+Scenario-scoped Datasheet. Does nothing if the Datasheet exists at the
+Library or Project level. Default is \code{FALSE}}
+
+\item{returnInvisible}{logical. If \code{TRUE}, returns columns that are
+invisible in the User Interface (i.e., are only used and populated
+internally by SyncroSim or the SyncroSim Package). Default is \code{FALSE}}
 }
 \value{
 If \code{summary=TRUE} returns a data.frame of Datasheet names
@@ -150,24 +167,24 @@ added if a Scenario has dependencies. If \code{optional=FALSE}, columns include:
 
 Otherwise, for each element in name a Datasheet is returned as follows:
 \itemize{
-\item {If \code{lookupsAsFactors=TRUE} (default): }{Each column is given the correct
+\item If \code{lookupsAsFactors=TRUE} (default): Each column is given the correct
 data type, and dependencies returned as factors with allowed values (levels).
-A warning is issued if the lookup has not yet been set.}
-\item {If \code{empty=TRUE}: }{Each column is given the correct data type. Fast (1 less
-console command)}.
-\item {If \code{empty=FALSE} and \code{lookupsAsFactors=FALSE}: }{Column types are not checked,
-and the optional argument is ignored. Fast (1 less console command).}
-\item {If SsimObject is a list of \code{\link{Scenario}} or \code{\link{Project}}
+A warning is issued if the lookup has not yet been set.
+\item If \code{empty=TRUE}: Each column is given the correct data type. Fast (1 less
+console command).
+\item If \code{empty=FALSE} and \code{lookupsAsFactors=FALSE}: Column types are not checked,
+and the optional argument is ignored. Fast (1 less console command).
+\item If SsimObject is a list of \code{\link{Scenario}} or \code{\link{Project}}
 objects (output from \code{\link{run}}, \code{\link{Scenario}} or
-\code{\link{Project}}): }{Adds ScenarioID/ProjectID column if appropriate.}
-\item {If Scenario/Project is a vector: }{Adds ScenarioID/ProjectID column
-as necessary.}
-\item {If requested Datasheet has Scenario scope and contains info from more
-than one Scenario: }{ScenarioID/ScenarioName/ScenarioParent columns
-identify the Scenario by \code{name}, \code{id}, and \code{parent} (if a result Scenario)}.
-\item {If requested Datasheet has Project scope and contains info from more
-than one Project: }{ProjectID/ProjectName columns identify the Project
-by \code{name} and \code{id}}
+\code{\link{Project}}): Adds ScenarioID/ProjectID column if appropriate.
+\item If Scenario/Project is a vector: Adds ScenarioID/ProjectID column
+as necessary.
+\item If requested Datasheet has Scenario scope and contains info from more
+than one Scenario: ScenarioID/ScenarioName/ScenarioParent columns
+identify the Scenario by \code{name}, \code{id}, and \code{parent} (if a result Scenario).
+\item If requested Datasheet has Project scope and contains info from more
+than one Project: ProjectID/ProjectName columns identify the Project
+by \code{name} and \code{id}.
 }
 }
 \examples{
