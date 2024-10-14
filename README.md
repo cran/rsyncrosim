@@ -6,7 +6,7 @@
 ## The R interface to SyncroSim
 
 [![License:
-MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/license/mit/)
+MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/license/mit)
 [![Downloads](https://cranlogs.r-pkg.org/badges/rsyncrosim?color=brightgreen)](https://CRAN.R-project.org/package=rsyncrosim/)
 <!-- [![Codecov test coverage](https://codecov.io/gh/syncrosim/rsyncrosim/branch/dev/graph/badge.svg)](https://codecov.io/gh/syncrosim/rsyncrosim?branch=dev) -->
 
@@ -16,6 +16,8 @@ Release](https://img.shields.io/github/v/release/syncrosim/rsyncrosim?label=Late
 Version](https://img.shields.io/cran/v/rsyncrosim?label=CRAN%20Version)](https://CRAN.R-project.org/package=rsyncrosim)
 [![GitHub
 Version](https://img.shields.io/github/r-package/v/syncrosim/rsyncrosim?label=GitHub%20Version)](https://github.com/syncrosim/rsyncrosim/blob/dev/DESCRIPTION)
+
+*Click [here](https://syncrosim.github.io/rsyncrosim-v1/) to view the **rsyncrosim version 1** documentation.*
 
 ## About SyncroSim
 

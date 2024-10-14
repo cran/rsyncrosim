@@ -4,7 +4,13 @@
 \alias{folder}
 \title{Create or open a Folder}
 \usage{
-folder(ssimObject = NULL, folder = NULL, parentFolder = NULL, create = FALSE)
+folder(
+  ssimObject = NULL,
+  folder = NULL,
+  parentFolder = NULL,
+  summary = FALSE,
+  create = FALSE
+)
 }
 \arguments{
 \item{ssimObject}{\code{\link{SsimLibrary}} or \code{\link{Project}} object.}
@@ -18,6 +24,10 @@ ID exists).}
 \item{parentFolder}{character, integer, or SyncroSim Folder object. If not
 \code{NULL} (Default), the new folder will be created inside of the
 specified parent folder}
+
+\item{summary}{logical. If \code{FALSE}, then returns a folder object. If
+\code{TRUE}, then returns a dataframe of information about the specified
+folder}
 
 \item{create}{logical. Whether to create a new folder if the folder name given
 already exists in the SyncroSim library. If \code{FALSE} (Default), then will
@@ -49,6 +59,9 @@ myFolder <- folder(myProject, folder = "New Folder")
 # Create a nested folder within "New Folder"
 myNestedFolder <- folder(myProject, folder = "New Nested Folder", 
                          parentFolder = myFolder)
+                         
+# Retrieve a dataframe of all folders in a project
+folder(myProject)
 }
 
 }

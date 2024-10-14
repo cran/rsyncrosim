@@ -1,16 +1,26 @@
-# rsyncrosim 1.5.0
+# rsyncrosim 2.0.1
 
 ## Breaking changes
 
-* Added `returnScenarioInfo` argument to `datasheet()` function that adds the `Scenario ID`, `Scenario Name`, `Project ID`, `Parent ID`, and `Parent Name` columns to the output dataframe. By default, this argument is `FALSE`. The behaviour in v1.4.14 was to always return these columns.
-* Added `returnInvisible` argument to `datasheet()` function that, when set to `TRUE`, returns columns that are invisible in the SyncroSim User Interface. These columns are only used internally by SyncroSim and its Packages, and should normally not be edited or visible by the average SyncroSim User. By default, this argument is `FALSE`. The behaviour in v1.4.14 was to always return these columns.
-* Removed the `published()` function
-
 ## Bug fixes:
 
-* Fixed bug in `folder()` function - issue retrieving existing folder when dependencies added to the library structure
+* Bug fix to `run()` when running multiple scenarios at a time
+* Fix bug with empty datasheets returning NA values
+* Update `addPackage()` to properly update package version in a library and fix bug caused by change in SyncroSim 3 console
+* Fix `delete()` function
+* Fix `backup` command
+* Fix bug with internal folder code having wrong "ID"" case
 
 ## New features:
 
+* Updates to vignettes and documentation for version 2
+* Add `deleteLibrary()` function specifically for deleting library objects
+* Added suite of charting functions for creating SyncroSim charts from R
 
 ## Minor improvements and fixes
+
+* Add warning for when library packages are not properly installed
+* Add `forceUpdate` argument back to `ssimLibrary()`
+* Change default `session()` path to "SyncroSim Studio"
+* Ensure that a result scenario is output by `run()` even on run failure
+* Add long path warning message

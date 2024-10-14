@@ -1,7 +1,7 @@
 Package: rsyncrosim
 Type: Package
 Title: The R Interface to 'SyncroSim'
-Version: 1.5.0
+Version: 2.0.1
 Authors@R: c(
     person("Colin", "Daniel", email = "colin.daniel@apexrms.com",
            role = "aut"),
@@ -29,29 +29,33 @@ Description: 'SyncroSim' is a generalized framework for managing scenario-based
     (API documentation: <https://docs.syncrosim.com/>).
 License: MIT + file LICENSE
 Encoding: UTF-8
-Imports: methods, DBI, RSQLite, terra, gtools, lifecycle
-Suggests: knitr, testthat (>= 3.0.0), ggplot2, Rcpp, rmarkdown, raster
-SystemRequirements: SyncroSim (>=2.3.10)
-Collate: 'AAAClassDefinitions.R' 'addPackage.R' 'addRow.R' 'addon.R'
-        'autogentags.R' 'backup.R' 'breakpoint.R' 'command.R'
-        'condaFilepath.R' 'datasheet.R' 'datasheetRaster.R'
-        'datasheetSpatRaster.R' 'dateModified.R' 'delete.R'
-        'dependency.R' 'deprecated.R' 'description.R' 'disableAddon.R'
-        'enableAddon.R' 'filepath.R' 'folder.R' 'folderId.R'
+Imports: methods, DBI, RSQLite, terra, gtools
+Suggests: knitr, testthat (>= 3.0.0), ggplot2, Rcpp, rmarkdown
+SystemRequirements: SyncroSim (>=3.0.0)
+Collate: 'AAAClassDefinitions.R' 'addPackage.R' 'addRow.R' 'backup.R'
+        'chart.R' 'chartCriteria.R' 'chartData.R' 'chartDisagg.R'
+        'chartErrorBar.R' 'chartId.R' 'chartInclude.R'
+        'chartOptionsFont.R' 'chartOptionsFormat.R'
+        'chartOptionsLegend.R' 'chartOptionsXAxis.R'
+        'chartOptionsYAxis.R' 'command.R' 'condaFilepath.R'
+        'createCondaEnv.R' 'datasheet.R' 'datasheetSpatRaster.R'
+        'dateModified.R' 'delete.R' 'deleteLibrary.R' 'dependency.R'
+        'description.R' 'filepath.R' 'folder.R' 'folderId.R'
         'ignoreDependencies.R' 'info.R' 'installConda.R'
-        'internalHelpers.R' 'name.R' 'scenarioId.R' 'projectId.R'
-        'sqlStatement.R' 'scenario.R' 'project.R' 'ssimLibrary.R'
-        'session.R' 'internalWrappers.R' 'mergeDependencies.R'
-        'owner.R' 'package.R' 'parentId.R' 'print.R' 'printCmd.R'
-        'readOnly.R' 'removePackage.R' 'rsyncrosim.R' 'run.R'
-        'runLog.R' 'saveDatasheet.R' 'silent.R' 'ssimEnvironment.R'
-        'ssimUpdate.R' 'updatePackage.R' 'useConda.R' 'version.R'
-RoxygenNote: 7.2.3
-URL: <https://syncrosim.github.io/rsyncrosim/>
+        'installPackage.R' 'internalHelpers.R' 'packages.R' 'name.R'
+        'scenarioId.R' 'projectId.R' 'sqlStatement.R' 'scenario.R'
+        'project.R' 'ssimLibrary.R' 'session.R' 'internalWrappers.R'
+        'mergeDependencies.R' 'owner.R' 'parentId.R' 'print.R'
+        'printCmd.R' 'readOnly.R' 'removePackage.R' 'rsyncrosim.R'
+        'run.R' 'runLog.R' 'saveDatasheet.R' 'silent.R'
+        'ssimEnvironment.R' 'uninstallPackage.R' 'useConda.R'
+        'version.R'
+RoxygenNote: 7.3.2
+URL: https://syncrosim.github.io/rsyncrosim/
 BugReports: https://github.com/syncrosim/rsyncrosim/issues/
 Config/testthat/edition: 3
 NeedsCompilation: no
-Packaged: 2024-02-01 16:26:11 UTC; birch
+Packaged: 2024-10-14 21:40:15 UTC; birch
 Author: Colin Daniel [aut],
   Josie Hughes [aut],
   Valentin Lucet [aut],
@@ -63,4 +67,4 @@ Author: Colin Daniel [aut],
   ApexRMS [cph]
 Maintainer: Katie Birchard <katie.birchard@apexrms.com>
 Repository: CRAN
-Date/Publication: 2024-02-01 16:40:09 UTC
+Date/Publication: 2024-10-14 22:00:02 UTC
