@@ -15,10 +15,6 @@ NULL
 #'     that integer ids are slightly faster
 #' @param summary logical. If \code{FALSE} (default) result Scenario objects are returned. 
 #'     If \code{TRUE} (faster) result Scenario ids are returned
-#' @param copyExternalInputs logical. If \code{FALSE} (default) then a copy of external
-#'     input files (e.g. GeoTIFF files) is not created for each multiprocessing job. Otherwise, a 
-#'     copy of external inputs is created for each multiprocessing job. Applies only when 
-#'     the number of jobs is set to >1 in the core_Multiprocessing datasheet.
 #' @param transformerName character.  The name of the transformer to run (optional)
 #'     
 #' @details
@@ -54,44 +50,39 @@ NULL
 #' @export
 setGeneric("run", 
            function(ssimObject, scenario = NULL, summary = FALSE, 
-                    copyExternalInputs = FALSE, transformerName = NULL) standardGeneric("run"))
+                    transformerName = NULL) standardGeneric("run"))
 
 #' @rdname run
 setMethod("run", signature(ssimObject = "character"), 
-          function(ssimObject, scenario, summary, copyExternalInputs, 
-                   transformerName) {
+          function(ssimObject, scenario, summary, transformerName) {
             
   if (ssimObject == SyncroSimNotFound(warn = FALSE)) {
     return(SyncroSimNotFound())
   }
             
   ssimObject <- .ssimLibrary(ssimObject)
-  out <- run(ssimObject, scenario, summary, copyExternalInputs, 
-             transformerName)
+  out <- run(ssimObject, scenario, summary, transformerName)
   
   return(out)
 })
 
 #' @rdname run
 setMethod("run", signature(ssimObject = "list"), 
-          function(ssimObject, scenario, summary, copyExternalInputs, 
-                   transformerName) {
+          function(ssimObject, scenario, summary, transformerName) {
             
   x <- getIdsFromListOfObjects(ssimObject, expecting = "Scenario", 
                                scenario = scenario)
   ssimObject <- x$ssimObject
   scenario <- x$objs
-  out <- run(ssimObject, scenario, summary, copyExternalInputs, 
-             transformerName)
+  out <- run(ssimObject, scenario, summary, transformerName)
   
   return(out)
 })
 
 #' @rdname run
 setMethod("run", signature(ssimObject = "SsimObject"), 
-          function(ssimObject, scenario, summary, copyExternalInputs, 
-                   transformerName) {
-     
+          function(ssimObject, scenario, summary, transformerName) {
+  
   ScenarioId <- NULL     
   xProjScn <- .getFromXProjScn(ssimObject, scenario = scenario, 
                                convertObject = TRUE, returnIds = TRUE, 
@@ -108,23 +99,28 @@ setMethod("run", signature(ssimObject = "SsimObject"),
   }
   
   for (i in seq(length.out = length(scenario))) {
-    
+
     cScn <- scenario[i]
     name <- scenarioSet$Name[scenarioSet$ScenarioId == cScn][1]
 
     print(paste0("Running scenario [", cScn, "] ", name))
 
-    args <- list(run = NULL, lib = .filepath(x), sid = cScn, copyextfiles = "no")
+    args <- list(run = NULL, lib = .filepath(x), sid = cScn)
 
     if (!is.null(transformerName)) {
       args[["trx"]] <- transformerName
     }
-    
-    if (copyExternalInputs == TRUE) {
-      args[["copyextfiles"]] <- "yes"
-    }
 
     tt <- command(args, .session(x))
+    
+    if (grepl("You must be signed in", tt[1]) | grepl("There has been an issue with your SyncroSim license file", tt[1])) {
+      msg <- paste(tt[1], 
+                   "\r\n",
+                   "\r\n",
+                   " Use the signIn() function to sign in to your SyncroSim",
+                   "account from rsyncrosim.")
+      stop(msg)
+    }
 
     if (tt[1] != "saved") {
       message(tt)

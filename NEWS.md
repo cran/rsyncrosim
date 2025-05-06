@@ -1,26 +1,21 @@
-# rsyncrosim 2.0.1
+# rsyncrosim 2.1.2
 
 ## Breaking changes
 
+* Incremented compatible SyncroSim version to 3.1
+
 ## Bug fixes:
 
-* Bug fix to `run()` when running multiple scenarios at a time
-* Fix bug with empty datasheets returning NA values
-* Update `addPackage()` to properly update package version in a library and fix bug caused by change in SyncroSim 3 console
-* Fix `delete()` function
-* Fix `backup` command
-* Fix bug with internal folder code having wrong "ID"" case
+* Fix `filterValue` and `filterColumn` arguments in `datasheet()` and `datasheetSpatRaster()` 
+* Fix issues with factor lookups not working in `datasheet()` function
+* Fix bug in `installPackage()` and `uninstallPackage()` preventing package install when no packages installed yet
 
 ## New features:
 
-* Updates to vignettes and documentation for version 2
-* Add `deleteLibrary()` function specifically for deleting library objects
-* Added suite of charting functions for creating SyncroSim charts from R
+* Add `software` argument to `installConda()` for installing miniforge
+* Add authentication functions `signIn()`, `signOut()`, and `viewProfile()`
 
 ## Minor improvements and fixes
 
-* Add warning for when library packages are not properly installed
-* Add `forceUpdate` argument back to `ssimLibrary()`
-* Change default `session()` path to "SyncroSim Studio"
-* Ensure that a result scenario is output by `run()` even on run failure
-* Add long path warning message
+* Fix issue when loading a library where rsyncrosim always throws a warning that the package has not been installed properly if the package was built against SyncroSim 3.0
+* Documentation updates and fixes

@@ -172,6 +172,7 @@ NULL
 #' }
 #' 
 #' @export
+#' @importFrom stats setNames
 #' @import RSQLite
 setGeneric("datasheet", function(ssimObject, name = NULL, project = NULL, scenario = NULL, 
                                  summary = NULL, optional = FALSE, empty = FALSE, 
@@ -441,18 +442,16 @@ setMethod("datasheet",
         if (!(filterColumn %in% datasheetCols$name)) {
           filterColumn <- NULL
         }
-        #TODO: remove isOutput here and test
+        
         else if (is.na(suppressWarnings(as.integer(filterValue)))) {
-          if (sheetNames$isOutput){
-            inputDatasheetName <- subset(datasheetCols, name == filterColumn)$formula1
-            
-            if (inputDatasheetName == "N/A") {
-              inputDatasheetName <- name
-            }
-            
-          } else {
+          
+          inputDatasheetName <- subset(datasheetCols, 
+                                       name == filterColumn)$formula1
+          
+          if (inputDatasheetName == "N/A") {
             inputDatasheetName <- name
           }
+            
           tempFile <- paste0(.tempfilepath(x), "/", name, ".csv")
           unlink(tempFile)
           args <- list(export = NULL, lib = .filepath(x), sheet = inputDatasheetName,
@@ -488,10 +487,11 @@ setMethod("datasheet",
     
     # Use console means using the console either to write out a query to file OR
     # write the datasheet directly
+    
     useConsole <- TRUE
     tempFile <- paste0(.tempfilepath(x), "/", name, ".csv")
     
-    if (!empty) {
+    if (!empty | lookupsAsFactors) {
       # If non empty set, carry on with the retrieving of data
       
       # Use console if filterColumn argument is used
@@ -655,6 +655,12 @@ setMethod("datasheet",
           sheet <- sheet[!(colSums(is.na(sheet)) == nrow(sheet))]
         }
       }
+      
+      if (empty) {
+        if (nrow(sheet) > 0){
+          sheet <- sheet[0,]
+        }
+      }
     } else {
       # If empty set
       sheet <- data.frame(temp = NA)
@@ -667,6 +673,7 @@ setMethod("datasheet",
     
     # TODO review this, this bit assign the correct data types 
     if (empty | lookupsAsFactors | !returnInvisible) {
+      
       tt <- command(c("list", "columns", "csv", paste0("lib=", .filepath(x)), paste0("sheet=", name)), .session(x))
       sheetInfo <- .dataframeFromSSim(tt)
       sheetInfo$id <- seq(length.out = nrow(sheetInfo))
@@ -700,8 +707,11 @@ setMethod("datasheet",
           con <- DBI::dbConnect(drv, .filepath(x))
           # console export can't handle multiple scenarios/projects - so query database directly
         } else {
+          
           tempFile <- paste0(.tempfilepath(x), "/", name, ".csv")
-          args <- list(export = NULL, lib = .filepath(x), sheet = name, file = tempFile, valsheetsonly = NULL, force = NULL, includepk = NULL)
+          args <- list(export = NULL, lib = .filepath(x), sheet = name, 
+                       file = tempFile, valsheetsonly = NULL, force = NULL, 
+                       includepk = NULL)
           args <- assignPidSid(args, sheetNames, pid, sid)
           
           tt <- command(args, .session(x))
@@ -763,8 +773,11 @@ setMethod("datasheet",
         }
         if (cRow$valType == "DataSheet") {
           if (lookupsAsFactors) {
+            
             # Find display member to create factors from
-            tt <- command(args = list(lib = .filepath(x), list = NULL, datasheets = NULL, includesys = NULL), session = .session(x))
+            tt <- command(args = list(lib = .filepath(x), list = NULL, 
+                                      datasheets = NULL, includesys = NULL), 
+                          session = .session(x))
             tt <- .dataframeFromSSim(tt, csv = FALSE)
             displayMem <- tt[tt$name == cRow$formula1,]$displayMember
             
@@ -774,8 +787,8 @@ setMethod("datasheet",
             } else {
               lookupPath <- gsub(name, cRow$formula1, tempFile, fixed = TRUE)
               if (!file.exists(lookupPath)) {
-                lookupSheet <- data.frame(Name = NULL)
-                names(lookupSheet)[names(lookupSheet) == "Name"] <- displayMem
+                lookupSheet <- setNames(data.frame(matrix(ncol = 1, nrow = 0)), 
+                                        c(displayMem))
               } else {
                 lookupSheet <- read.csv(lookupPath, as.is = TRUE)
               }
@@ -796,7 +809,9 @@ setMethod("datasheet",
             }
             if ((nrow(lookupSheet) == 0) & (cRow$optional == "No")) {
               if (!grepl("Output", name)) {
-                warning(paste0(cRow$name, " depends on ", cRow$formula1, ". You should load ", cRow$formula1, " before setting ", name, "."))
+                warning(paste0(cRow$name, " depends on ", cRow$formula1, 
+                               ". You should load ", cRow$formula1, 
+                               " before setting ", name, "."))
               }
             }
             if (nrow(lookupSheet) > 0) {
@@ -808,10 +823,13 @@ setMethod("datasheet",
             if (is.numeric(sheet[[cRow$name]])) {
               if (nrow(lookupSheet) > 0) {
                 if (length(intersect(displayMem, names(lookupSheet))) == 0) {
-                  stop("Something is wrong. Expecting Name in lookup table.")
+                  stop(paste0("Something is wrong. Expecting ", displayMem, 
+                              " in lookup table."))
                 }
                 
-                lookupMerge <- subset(lookupSheet, select = c(names(lookupSheet)[1], displayMem))
+                lookupMerge <- subset(lookupSheet, 
+                                      select = c(names(lookupSheet)[1], 
+                                                 displayMem))
                 
                 names(lookupMerge) <- c(cRow$name, "lookupName")
                 sheet <- merge(sheet, lookupMerge, all.x = TRUE)

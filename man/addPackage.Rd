@@ -35,7 +35,7 @@ Adds package(s) to a \code{\link{SsimLibrary}}.
 \dontrun{
 # Install "stsim" and "stsimecodep" SyncroSim packages
 installPackage(packages = c("stsim", "stsim"),
-               versions = c("4.0.0", "4.0.1"))
+               versions = c("4.0.1", "4.3.5"))
 installPackage("stsimecodep")
 
 # Specify file path and name of new SsimLibrary
@@ -51,8 +51,7 @@ addPackage(myLibrary, packages = "stsimecodep")
 packages(myLibrary)
 
 # Change package version
-addPackage(myLibrary, packages = "stsim", versions = "4.0.0")
-addPackage(myLibrary, packages = "stsim", versions = "4.0.1")
+addPackage(myLibrary, packages = "stsim", versions = "4.3.5")
 
 # Remove package
 removePackage(myLibrary, packages = c("stsim", "stsimecodep"))

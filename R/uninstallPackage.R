@@ -24,10 +24,10 @@ NULL
 #' 
 #' # Install packages to SyncroSim session
 #' installPackages(packages = c("stsim", "stsim"),
-#'                 versions = c("4.0.0", "4.0.1"))
+#'                 versions = c("4.0.1", "4.3.5"))
 #' 
 #' # Uninstalls specific version of package from SyncroSim session
-#' uninstallPackage(packages = "stsim", versions = "4.0.0", session = mySession)
+#' uninstallPackage(packages = "stsim", versions = "4.0.1", session = mySession)
 #' 
 #' # Uninstalls all instances ofa package from SyncroSim session
 #' uninstallPackage(packages = "stsim", session = mySession)
@@ -55,6 +55,12 @@ setMethod("uninstallPackage", signature(session = "Session"),
           function(packages, versions, session) {
             
   installed <- .packages(session, installed = T)
+  
+  if (!is.data.frame(installed)) {
+    message("No packages currently installed.")
+    return()
+  }
+  
   retList <- list()
   
   for (i in length(packages)){
